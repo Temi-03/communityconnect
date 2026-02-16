@@ -9,6 +9,7 @@ export default function Signup() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [retrypassword, setretryPassword] = useState("");
   const [location, setLocation] = useState("");
   const [bio, setBio] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,6 +24,7 @@ export default function Signup() {
       if (!username.trim()) throw new Error("username is required.");
       if (!email.trim()) throw new Error("Email is required.");
       if (!password) throw new Error("Password is required.");
+      if(retrypassword !== password) throw new Error("Passwords do not match.");
       if (password.length < 6) throw new Error("Password must be at least 6 characters.");
 
 
@@ -70,6 +72,8 @@ export default function Signup() {
         style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
 
       <Text>Password</Text>
@@ -79,6 +83,14 @@ export default function Signup() {
         value={password}
         onChangeText={setPassword}
       />
+
+      <Text>Type Password again</Text>
+      <TextInput
+      style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+      value={retrypassword}
+      onChangeText={setretryPassword}
+      />
+
       <Text>Location</Text>
       <TextInput
         style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
