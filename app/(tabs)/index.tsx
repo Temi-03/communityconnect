@@ -11,28 +11,6 @@ import { createNotice, getNotices } from "../../services/noticeService";
 
 export default function HomeTab() {
 
-  async function signUP() {
-    try {
-      const userCred = await createUserWithEmailAndPassword(
-        auth,
-        "test@example.com",
-        "password123"
-      );
-
-      await createUser(userCred.user.uid, {
-        name: "Test User",
-        email: "test@example.com",
-        ratingAvg: 0,
-        ratingCount: 0,
-        skills: [],
-      });
-
-      console.log("USER CREATED:", userCred.user.uid);
-    } catch (e) {
-      console.log("ERROR CREATING USER:", e);
-    }
-  }
-
   async function testReadUser() {
     try {
       const uid = auth.currentUser?.uid;
@@ -232,7 +210,6 @@ async function testGetNotices() {
     }}>
       <Text style={{ fontSize: 40, color: "white" }}>TEST </Text>
       <Button title="Accept First Open Task" onPress={testAcceptTask} />
-      <Button title="Create User" onPress={signUP} />
       <Button title="Read User" onPress={testReadUser} />
       <Button title="Update User" onPress={testUpdateUser} />
       <Button title="Test Login" onPress={testLogin} />

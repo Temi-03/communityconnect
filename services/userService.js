@@ -1,22 +1,33 @@
-import { doc, setDoc, getDoc /* reads*/, updateDoc } from "firebase/firestore";
-import { db } from "../firebase"; //db is the firestore sonnection from firebase 
+import { db } from "../firebase";
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 
 export async function createUser(uid, data) {
-  return await setDoc(doc(db, "users", uid), {
+  const ref = doc(db, "users", uid);
+
+  await setDoc(ref, {
+    uid,
+    ratingAvg: 0,
+    ratingCount: 0,
+    skills: [],
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
     ...data,
-    createdAt: Date.now(),
-    updatedAt: Date.now()
   });
+
+  return uid;
 }
 
 export async function getUser(uid) {
-  const snap = await getDoc(doc(db, "users", uid));
+  const ref = doc(db, "users", uid);
+  const snap = await getDoc(ref);
   return snap.exists() ? snap.data() : null;
 }
 
 export async function updateUser(uid, data) {
-  return await updateDoc(doc(db, "users", uid), {
+  const ref = doc(db, "users", uid);
+  await updateDoc(ref, {
     ...data,
-    updatedAt: Date.now()
+    updatedAt: serverTimestamp(),
   });
+  return true;
 }
