@@ -2,7 +2,6 @@ import { useState } from "react";
 import { View, Text, TextInput, Button } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
-import { getUser } from "../../services/userService";
 import { router } from "expo-router";
 
 export default function Login() {
@@ -20,8 +19,6 @@ export default function Login() {
       if (!email.trim()) throw new Error("Email is required.");
       if (!password) throw new Error("Password is required.");
       
-
-
       const userCred = await signInWithEmailAndPassword(
         auth,
         email.trim(),
@@ -30,14 +27,8 @@ export default function Login() {
 
       console.log("LOGGED IN:", userCred.user.uid);
 
-      const profile = await getUser(userCred.user.uid);
-      if (!profile) {
-        console.log("No profile doc found for this user.");
-            } 
-    else {
-        console.log("USER PROFILE:", profile);
-}
-      router.replace("/)"); 
+      router.replace("/task/browseTask");
+
     } catch (e) {
       setError(e?.message || "Login failed.");
       console.log("LOGIN ERROR:", e);
