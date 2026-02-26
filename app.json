@@ -7,32 +7,48 @@
     "icon": "./assets/images/icon.png",
     "scheme": "communityconnect",
     "userInterfaceStyle": "automatic",
-
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.communityconnect",
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "config": {
+        "googleMapsApiKey": "AIzaSyBTP94IEeiITP5AzrduivCBsbwzpY-I-ZQ"
+      }
     },
-
     "android": {
       "package": "com.communityconnect",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBTP94IEeiITP5AzrduivCBsbwzpY-I-ZQ"
+        }
       }
     },
-
     "plugins": [
       "expo-router",
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "color": "#FF5FA2"
+        }
+      ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7508b409-336a-4424-8141-5a7853907c93"
+      }
+    },
+    "owner": "tems03"
   }
 }
-
