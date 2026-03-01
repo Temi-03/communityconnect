@@ -61,7 +61,7 @@ export default function Signup() {
       <View style={styles.formContainer}>
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
           <TextInput placeholder="Username"
-            placeholderTextColor="#e09020"
+            placeholderTextColor="#e09020b7"
             style={styles.input}
             value={username}
             onChangeText={setUsername}
@@ -70,7 +70,7 @@ export default function Signup() {
 
           <TextInput
             placeholder="Email"
-            placeholderTextColor="#e09020"
+            placeholderTextColor="#e09020b7"
             style={styles.input}
             value={email}
             onChangeText={setEmail}
@@ -80,7 +80,7 @@ export default function Signup() {
 
           <TextInput
             placeholder="Password"
-            placeholderTextColor="#e09020"
+            placeholderTextColor="#e09020b7"
             style={styles.input}
             value={password}
             onChangeText={setPassword}
@@ -89,7 +89,7 @@ export default function Signup() {
 
           <TextInput
             placeholder="Confirm Password"
-            placeholderTextColor="#e09020"
+            placeholderTextColor="#e09020b7"
             style={styles.input}
             value={retrypassword}
             onChangeText={setretryPassword}
@@ -117,7 +117,7 @@ export default function Signup() {
                 overflow: "hidden",
                
               },
-               placeholder: { color: "#e09020", },
+               placeholder: { color: "#e09020b7", },
             }}
           />
 
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 12,
     marginBottom: 12,
-    color: "#e09020",
+    color: "#e09020b7",
   },
 
   signUpButton: {
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
 
   signUpText: {
-    color: "#e09020",
+    color: "#e09020b7",
     fontSize: 16,
     fontWeight: "600",
   },

@@ -61,7 +61,7 @@ export default function Login() {
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
           <TextInput
             placeholder="Email"
-            placeholderTextColor="#e09020"
+            placeholderTextColor="#e09020b7"
             style={styles.input}
             value={email}
             onChangeText={setEmail}
@@ -71,7 +71,7 @@ export default function Login() {
 
           <TextInput
             placeholder="Password"
-            placeholderTextColor="#e09020"
+            placeholderTextColor="#e09020b7"
             secureTextEntry
             style={styles.input}
             value={password}
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 12,
     marginBottom: 15,
-    color: "#e09020",
+    color: "#e09020b7",
   },
 
   loginButton: {
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
 
   loginText: {
-    color: "#e09020",
+    color: "#e09020b7",
     fontSize: 16,
     fontWeight: "600",
   },
