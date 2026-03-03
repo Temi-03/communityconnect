@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Pressable, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
 import { router, Stack } from "expo-router";
 import { auth } from "../../firebase";
-import {getMyPostedTasks,getPendingApplicationsForOwner,approveApplicationAndCloseTask,rejectApplication,getTasksForUser,markTaskCompleted,} from "../../services/taskService";
+import {getMyPostedTasks,getTasksForUser,markTaskCompleted,} from "../../services/taskService";
 import { buildChatId } from "../../services/chatService";
+import { getPendingApplicationsForOwner,approveApplication,rejectApplication } from "@/services/applicationService";
 
 
 type TabKey = "posted" | "requests" | "completed";
@@ -79,7 +80,7 @@ async function handleApprove(r: any) {
 
     setActingId(r.id);
 
-    await approveApplicationAndCloseTask(r.id, uid);
+    await approveApplication(r.id, uid);
 
     const chatId = buildChatId(r.taskId, uid, r.volunteerUid);
     router.push(`/messages/${chatId}`);

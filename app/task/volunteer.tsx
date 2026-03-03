@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Pressable, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
 import { router, Stack } from "expo-router";
 import { auth } from "../../firebase";
-import { getMyApplications, getTasksForUser } from "../../services/taskService";
+import {getTasksForUser } from "../../services/taskService";
+import{ getMyApplications} from "../../services/applicationService"
 
 type TabKey = "applied" | "completed";
 
