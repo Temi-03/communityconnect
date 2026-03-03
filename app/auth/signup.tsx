@@ -5,6 +5,8 @@ import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplet
 import { auth } from "../../firebase";
 import { createUser } from "../../services/userService";
 import { router } from "expo-router";
+import { registerForPushNotifications } from "../../services/notificationService";
+import { savePushToken } from "../../services/userService";
 
 export default function Signup() {
   const [username, setUsername] = useState(""); 
@@ -37,6 +39,13 @@ export default function Signup() {
         email: mail,
         location: town || null,
       });
+
+      try {
+    const token = await registerForPushNotifications();
+    if (token) await savePushToken(userCred.user.uid, token);
+    } catch (err: any) {
+    console.log("Push token not saved after signup:", err?.message || err);
+    }
 
       router.replace("/(tabs)/home"); // navigate to home screen after successful signup
     } catch (err: any) {
