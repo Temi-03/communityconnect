@@ -105,7 +105,7 @@ export default function VolunteerTasksScreen() {
 
       
            <Pressable
-            onPress={() => router.push(`/task/Buttons/${t.id}`)}
+            onPress={() => router.push(`/task/rate/${t.id}`)}
             style={styles.outlineButtons}
           >
             <Text style={styles.outlineButtonsText}>Leave Rating</Text>
