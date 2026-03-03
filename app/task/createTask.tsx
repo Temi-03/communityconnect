@@ -33,6 +33,7 @@ export default function CreateTaskScreen() {
       if (!title.trim()) throw new Error("Title is required.");
       if (!details.trim()) throw new Error("Details are required.");
       if (!town.trim()) throw new Error("Town is required.");
+      if (!dueAt) throw new Error("Due time  is required.");
 
       await createTask(owner, {
         title,
