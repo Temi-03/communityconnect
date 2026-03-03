@@ -22,7 +22,7 @@ export async function createUser(uid, data) { //used to create the user
 export async function getUser(uid) { //get user id
   const ref = doc(db, "users", uid);
   const snap = await getDoc(ref);
-  return snap.data;
+  return snap.data();
 }
 
 export async function updateUser(uid, data) { // will be used to update user dtat
