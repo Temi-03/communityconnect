@@ -3,7 +3,7 @@ import {View,Text,ScrollView,TextInput,Pressable,ActivityIndicator,StyleSheet,} 
 import { router, Stack } from "expo-router";
 import { auth, db } from "../../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import {clearPushToken,deleteUser as deleteUserDoc,} from "../../services/userService";
+import {clearPushToken,deleteUser as deleteUserDoc,updateUser} from "../../services/userService";
 import { signOut, updatePassword, deleteUser } from "firebase/auth";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 export default function SettingsScreen() {
@@ -32,8 +32,8 @@ export default function SettingsScreen() {
         const snap = await getDoc(doc(db, "users", uid));
         if (snap.exists()) {
           const data: any = snap.data();
-          setUsername(data.username ?? "");
-          setTown(data.town ?? "");
+          setUsername(data.username);
+          setTown(data.location);
         }
       } catch (e: any) {
         showMessage("Failed to load profile.");
@@ -46,15 +46,14 @@ export default function SettingsScreen() {
   async function saveProfile() {
     if (!uid) return;
 
-    if (!username.trim()) {
-      showMessage("Username required.");
+    if (!username.trim()) {showMessage("Username required.");
       return;
     }
 
     try {
-      await updateDoc(doc(db, "users", uid), {
+      await updateUser(uid, {
         username: username.trim(),
-        town: town.trim(),
+        location: town.trim(),
       });
 
       showMessage("Profile updated.");
@@ -108,11 +107,10 @@ export default function SettingsScreen() {
       await clearPushToken(uidNow);
       await deleteUserDoc(uidNow);
       await deleteUser(user);
-
-      router.replace("/auth/login");
     } catch {
       showMessage("Delete failed.");
     }
+    router.replace("/auth/login");
   }
 
   if (loading) {
