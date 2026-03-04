@@ -26,6 +26,7 @@ export default function CreateNotice() {
       await createNotice({
         userId: uid,
         username,
+        location:me.location,
         info: clean,
       });
 
