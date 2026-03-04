@@ -23,8 +23,8 @@ export default function NoticeBoard() {
       setError("");
       setLoading(true);
       const uid = auth.currentUser?.uid;
-       const data = await getNotices(user.location) as any ;
       const user = await getUser(uid) as any;
+      const data = await getNotices(user.location) as any ;
       setUserLocation(user.location);
       setRows(Array.isArray(data) ? data : []);
     } catch (e) {
