@@ -1,6 +1,6 @@
 import { useState } from "react";//
 import {View,Text,TextInput,Pressable,StyleSheet,KeyboardAvoidingView,Platform,ScrollView,} from "react-native";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword,sendEmailVerification } from "firebase/auth";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete"; //to help user search for town
 import { auth } from "../../firebase";
 import { createUser } from "../../services/userService";
@@ -39,7 +39,7 @@ export default function Signup() {
         email: mail,
         location: town || null,
       });
-
+      await sendEmailVerification(userCred.user);
       try {
     const token = await registerForPushNotifications();
     if (token) await savePushToken(userCred.user.uid, token);
@@ -47,7 +47,7 @@ export default function Signup() {
     console.log("Push token not saved after signup:", err?.message || err);
     }
 
-      router.replace("/(tabs)/home"); // navigate to home screen after successful signup
+      router.replace("/auth/verifyEmail"); // navigate to check for email verification
     } catch (err: any) {
       setError(err.message || "Signup failed.");
       console.log("SIGNUP ERROR:", err);
