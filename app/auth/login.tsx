@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {View,Text,TextInput,Pressable,StyleSheet} from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword,sendPasswordResetEmail, } from "firebase/auth";
 import { auth } from "../../firebase";
 import { router } from "expo-router";
 import { registerForPushNotifications } from "../../services/notificationService";
@@ -11,7 +11,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-//REMBER TO DO ACUTAL EMAIL VALIDATION tEMIIII
   async function handleLogin() {
     try {
       setError(""); // Clear previous errors
@@ -25,7 +24,13 @@ export default function Login() {
         email.trim(),
         password
       );
+      await userCred.user.reload();
 
+     if (!userCred.user.emailVerified) {
+      setError("Verify your email first. Tap 'Resend email' if needed.");
+      router.replace("/auth/verifyEmail");
+      return;
+}
       console.log("LOGGED IN:", userCred.user.uid);
         // After successful login, we register for push notifications and save the token to the user document, so that we can send push notifications to the user later
       try {
@@ -50,6 +55,20 @@ export default function Login() {
       setLoading(false); //disables the loading state after the login attempt is finished, regardless of success or failure
     }
   }
+
+  async function handleForgotPassword() {
+  try {
+    setError("");
+    const mail = email.trim();
+    if (!mail) throw new Error("Enter your email first.");
+    await sendPasswordResetEmail(auth, mail);
+    setError("Password reset email sent. Check your inbox/spam.");
+  } catch (err: any) {
+    if (err?.code === "auth/invalid-email") setError("Please enter a valid email.");
+    else if (err?.code === "auth/user-not-found") setError("No account found for that email.");
+    else setError(err?.message || "Could not send reset email.");
+  }
+}
 
   return (
       <View style={styles.container}>
@@ -87,9 +106,10 @@ export default function Login() {
               {loading ? "Logging in..." : "Log In"}
             </Text>
           </Pressable>
-
+          <Pressable onPress={handleForgotPassword} disabled={loading} style={{ marginBottom: 12 }}>
+                <Text style={{ color: "white", textDecorationLine: "underline", fontWeight: "600" }}>Forgot password </Text>
+         </Pressable>
           <Text style={styles.questionText}>Don’t have an account?</Text>
-
           <Pressable
             style={styles.signUpButton}
             onPress={() => router.push("/auth/signup")}
