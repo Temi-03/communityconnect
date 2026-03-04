@@ -3,7 +3,8 @@ import { View, Text, FlatList, Pressable, ActivityIndicator, StyleSheet } from "
 import { Stack, router } from "expo-router";
 import { getNotices } from "../../services/noticeService";
 import { FontAwesome } from "@expo/vector-icons";
-
+import { getUser } from "../../services/userService";
+import { auth } from "../../firebase";
 function formatWhen(createdAt: any) {
   if (!createdAt) return "";
   const date = createdAt?.toDate ? createdAt.toDate() : new Date(createdAt);
@@ -15,13 +16,16 @@ export default function NoticeBoard() {
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [userLocation, setUserLocation] = useState("");
 
   async function loadNotices() {
     try {
       setError("");
       setLoading(true);
-
+      const uid = auth.currentUser?.uid;
       const data = await getNotices();
+      const user = await getUser(uid) as any;
+      setUserLocation(user.location);
       setRows(Array.isArray(data) ? data : []);
     } catch (e) {
       console.log("GET NOTICES ERROR:", e);
@@ -48,10 +52,17 @@ export default function NoticeBoard() {
           ),
         }}
       />
-      <Pressable onPress={loadNotices} style={styles.refreshButton} disabled={loading}>
-        <Text style={styles.refreshText}>{loading ? "Refreshing..." : "Refresh"}</Text>
-      </Pressable>
-
+      <View style={styles.topRow}>
+              <Pressable onPress={loadNotices} style={styles.refreshButton}>
+                <Text style={styles.refreshText}>Refresh</Text>
+              </Pressable>
+              <View style={styles.locationRow}>
+                <FontAwesome name="map-marker" size={16} color="#3d8d34" />
+                <Text style={styles.locationText}>
+                  {userLocation || "No location"}
+                </Text>
+              </View>
+            </View>
       {loading ? (
         <View style={{ paddingTop: 10 }}>
           <ActivityIndicator />
@@ -140,4 +151,19 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: "#333",
   },
+  topRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: 10,
+},
+locationRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 6,
+},
+locationText: {
+  fontWeight: "600",
+  color: "#333",
+},
 });

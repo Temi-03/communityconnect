@@ -4,7 +4,7 @@ import { router, Tabs } from "expo-router";
 import { auth } from "../../firebase";
 import { getOpenTasks } from "../../services/taskService";
 import { FontAwesome } from "@expo/vector-icons";
-
+import { getUser } from "../../services/userService";
 function formatDateTime(ts: any) {
   if (!ts) return "—";
   
@@ -21,6 +21,7 @@ export default function BrowseTasksScreen() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [userLocation, setUserLocation] = useState("");
 
   async function loadTasks() {
     try {
@@ -29,6 +30,8 @@ export default function BrowseTasksScreen() {
 
       const uid = auth.currentUser?.uid;
       const openTasks = await getOpenTasks(uid);
+      const user = await getUser(uid) as any;
+      setUserLocation(user.location);
       setTasks(openTasks);
     } catch (err: any) {
         setError("Something went wrong. Please try again.");
@@ -62,9 +65,17 @@ export default function BrowseTasksScreen() {
 
       <Text style={styles.pageTitle}>Available Tasks</Text>
 
-      <Pressable onPress={loadTasks} style={styles.refreshButton}>
-        <Text style={styles.refreshText}>Refresh</Text>
-      </Pressable>
+      <View style={styles.topRow}>
+        <Pressable onPress={loadTasks} style={styles.refreshButton}>
+          <Text style={styles.refreshText}>Refresh</Text>
+        </Pressable>
+        <View style={styles.locationRow}>
+          <FontAwesome name="map-marker" size={16} color="#3d8d34" />
+          <Text style={styles.locationText}>
+            {userLocation || "No location"}
+          </Text>
+        </View>
+      </View>
 
       {loading ? (
         <View style={{ paddingTop: 10 }}>
@@ -165,4 +176,19 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "600",
   },
+  topRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: 10,
+},
+locationRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 6,
+},
+locationText: {
+  fontWeight: "600",
+  color: "#333",
+},
 });
