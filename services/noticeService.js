@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import {addDoc,collection,query,orderBy,getDocs,serverTimestamp,} from "firebase/firestore";
+import {addDoc,collection,query,orderBy,getDocs,serverTimestamp,where,doc,deleteDoc} from "firebase/firestore";
 
 export async function createNotice({ userId, username, info,location }) {
   const cleanInfo = String(info).trim();
@@ -30,4 +30,23 @@ export async function getNotices(currentTown) {
     results.push(t);
   });
   return results;
+}
+
+export async function getMyNotices(userId) {
+  const q = query(
+    collection(db, "noticeBoard"),
+    where("userId", "==", userId),
+    orderBy("createdAt", "desc")
+  );
+  const snap = await getDocs(q);
+  const results = [];
+  snap.forEach((d) => {
+    results.push({ id: d.id, ...d.data() });
+  });
+  return results;
+}
+
+export async function deleteNotice(noticeId) {
+  const ref = doc(db, "noticeBoard", noticeId);
+  await deleteDoc(ref);
 }

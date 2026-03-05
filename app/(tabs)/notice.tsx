@@ -45,8 +45,14 @@ export default function NoticeBoard() {
         options={{
           title: "Notice Board",
           headerTitleAlign: "center",
+          headerLeft: () => (
+            <Pressable
+              onPress={() => router.push("/notice/myNotice")}style={{ paddingHorizontal: 20 }}>
+              <FontAwesome name="list-alt" size={24} color="white" />
+            </Pressable>
+          ),
           headerRight: () => (
-            <Pressable onPress={() => router.push("/notice/create")} style={{ paddingHorizontal: 14 }}>
+            <Pressable onPress={() => router.push("/notice/create")} style={{ paddingHorizontal: 20 }}>
               <FontAwesome name="plus-circle" size={24} color="white" />
             </Pressable>
           ),
