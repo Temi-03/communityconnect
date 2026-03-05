@@ -5,7 +5,8 @@ import { auth } from "../../firebase";
 import {getMyPostedTasks,getTasksForUser,markTaskCompleted,} from "../../services/taskService";
 import { buildChatId } from "../../services/chatService";
 import { getPendingApplicationsForOwner,approveApplication,rejectApplication } from "@/services/applicationService";
-
+import { deleteTask } from "../../services/taskService";
+import { Alert } from "react-native";
 
 type TabKey = "posted" | "requests" | "completed";
 
@@ -83,7 +84,10 @@ async function handleApprove(r: any) {
     await approveApplication(r.id, uid);
 
     const chatId = buildChatId(r.taskId, uid, r.volunteerUid);
-    router.push(`/messages/${chatId}`);
+    router.push({
+  pathname: `/messages/${chatId}`,
+  params: { otherUid: r.volunteerUid },
+});
 
     await loadRequests();
     await loadPosted();
@@ -94,7 +98,22 @@ async function handleApprove(r: any) {
   }
 }
 
+async function handleDelete(taskId:any) {
+  try {
+    const res = await deleteTask(taskId);
 
+    Alert.alert(
+      "Task updated",
+      res.action === "deleted"
+        ? "Task deleted successfully."
+        : "Task cancelled because volunteers had already applied."
+    );
+
+    await loadPosted(); 
+  } catch (e:any) {
+    Alert.alert("Error", e.message);
+   }
+}
   async function handleReject(appId: string) {
     try {
       const uid = auth.currentUser?.uid;
@@ -152,6 +171,23 @@ async function handleApprove(r: any) {
             >
               <Text style={styles.primaryButtonsText}>View Task</Text>
             </Pressable>
+            {t.status === "open" && (
+              <Pressable
+                onPress={() =>
+                  Alert.alert(
+                    "Delete task?",
+                    "If volunteers already applied, it will be cancelled instead of deleted.",
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      { text: "Confirm", style: "destructive", onPress: () => handleDelete(t.id) },
+                    ]
+                  )
+                }
+                style={styles.deleteButtons}
+              >
+              <Text style={styles.deleteButtonsText}>Delete</Text>
+              </Pressable>
+            )}
 
             {t.status === "accepted" ? (
               <Pressable onPress={() => handleMarkCompleted(t.id)} style={styles.completeButtons}>
@@ -390,4 +426,15 @@ const styles = StyleSheet.create({
 
   listArea: { flex: 1, marginTop: 6 },
   listContent: { paddingBottom: 40 },
+  deleteButtons: {
+  marginTop: 10,
+  paddingVertical: 10,
+  borderRadius: 10,
+  backgroundColor: "#d9534f",
+  alignItems: "center",
+},
+deleteButtonsText: {
+  color: "white",
+  fontWeight: "900",
+},
 });
