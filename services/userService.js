@@ -36,8 +36,19 @@ export async function updateUser(uid, data) { // will be used to update user dta
 
 // delete user info
 export async function deleteUser(uid) {
+  if (!uid) throw new Error("Missing uid.");
   const ref = doc(db, "users", uid);
-  await deleteDoc(ref);
+  await updateDoc(ref, {
+    isDeleted: true,
+    deletedAt: serverTimestamp(),
+    username: "Deleted user",
+    location: "",
+    email: deleteField(),
+    pushToken: deleteField(),
+    photoURL: deleteField(),
+    updatedAt: serverTimestamp(),
+  });
+
   return true;
 }
 
