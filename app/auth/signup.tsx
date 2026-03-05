@@ -49,7 +49,9 @@ export default function Signup() {
 
       router.replace("/auth/verifyEmail"); // navigate to check for email verification
     } catch (err: any) {
-      setError(err.message || "Signup failed.");
+      if (err?.code === "auth/invalid-email") {
+      setError("Please enter a valid email.");}
+      else setError(err.message || "Signup failed.");
       console.log("SIGNUP ERROR:", err);
     } finally {
       setLoading(false);
