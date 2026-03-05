@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef} from "react";
 import {View,Text,ScrollView,TextInput,Pressable,ActivityIndicator,StyleSheet,} from "react-native";
 import { router, Stack } from "expo-router";
 import { auth, db } from "../../firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc,onSnapshot } from "firebase/firestore";
 import {clearPushToken,deleteUser as deleteUserDoc,updateUser} from "../../services/userService";
 import { signOut, updatePassword, deleteUser } from "firebase/auth";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { FontAwesome } from "@expo/vector-icons";
 export default function SettingsScreen() {
   const uid = auth.currentUser?.uid;
 
@@ -15,7 +16,8 @@ export default function SettingsScreen() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
-
+  const [ratingAvg, setRatingAvg] = useState(0);
+  const placesRef = useRef<any>(null);
   function showMessage(text: string) {
     setMessage(text);
     setTimeout(() => setMessage(""), 2500);
@@ -26,22 +28,32 @@ export default function SettingsScreen() {
       setLoading(false);
       return;
     }
-
-    (async () => {
-      try {
-        const snap = await getDoc(doc(db, "users", uid));
+  const unsub = onSnapshot(
+    doc(db, "users", uid),
+    (snap) => {
         if (snap.exists()) {
           const data: any = snap.data();
-          setUsername(data.username);
-          setTown(data.location);
-        }
-      } catch (e: any) {
-        showMessage("Failed to load profile.");
-      } finally {
-        setLoading(false);
+
+        const loc = String(data.location);
+
+        setUsername(String(data.username));
+        setTown(loc);
+        setRatingAvg(Number(data.ratingAvg ?? 0));
+        setTimeout(() => {
+          placesRef.current.setAddressText(loc);
+        }, 300);
       }
-    })();
-  }, [uid]);
+
+      setLoading(false);
+    },
+    (err) => {
+      showMessage("Failed to load profile.");
+       setLoading(false);
+    }
+  );
+
+  return () => unsub();
+}, [uid]);
 
   async function saveProfile() {
     if (!uid) return;
@@ -107,11 +119,17 @@ export default function SettingsScreen() {
       await clearPushToken(uidNow);
       await deleteUserDoc(uidNow);
       await deleteUser(user);
-    } catch {
-      showMessage("Delete failed.");
-    }
-    router.replace("/auth/login");
+      await signOut(auth);
+    } catch (e: any) {
+    console.log("Delete account failed:", e);
+    try {
+      await signOut(auth);
+    } catch {}
+
+    showMessage(e?.message || "Delete failed. You may need to log in again to delete your account.");
+    router.replace("/entry");
   }
+}
 
   if (loading) {
     return (
@@ -123,13 +141,23 @@ export default function SettingsScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <Stack.Screen options={{ title: "Settings", headerTitleAlign: "center" }} />
 
       {message ? <Text style={styles.message}>{message}</Text> : null}
 
       <Text style={styles.title}>Profile</Text>
-
+      <View style={styles.ratingRow}>
+      <Text style={styles.ratingLabel}>Rating</Text>
+        {ratingAvg > 0 ? (
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+           <FontAwesome name="star" size={16} color="#f5b301" />
+      <Text style={styles.ratingValue}>{ratingAvg.toFixed(1)}</Text>
+    </View>
+    ) : (
+    <Text style={styles.ratingEmpty}>No ratings yet</Text>
+  )}
+</View>
       <TextInput
         value={username}
         onChangeText={setUsername}
@@ -137,11 +165,13 @@ export default function SettingsScreen() {
         style={styles.input}
       />
       <GooglePlacesAutocomplete
+            ref={placesRef}
             placeholder="Town"
             fetchDetails={false}
             onPress={(data) => {
-              const townName = data.description.split(",")[0].trim();
+              const townName =  data.structured_formatting.main_text ||data.description.split(",")[0].trim();
               setTown(townName);
+              placesRef.current?.setAddressText(townName);
             }}
             query={{
               key: process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY,
@@ -281,4 +311,31 @@ const styles = StyleSheet.create({
     color: "#b00020",
     fontWeight: "700",
   },
+  ratingRow: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  paddingVertical: 10,
+  paddingHorizontal: 12,
+  borderWidth: 1,
+  borderColor: "#ddd",
+  borderRadius: 10,
+  marginBottom: 12,
+  backgroundColor: "white",
+},
+
+ratingLabel: {
+  fontWeight: "700",
+  color: "#111",
+},
+
+ratingValue: {
+  fontWeight: "700",
+  color: "#111",
+},
+
+ratingEmpty: {
+  fontWeight: "600",
+  color: "#777",
+},
 });
