@@ -64,9 +64,9 @@ export default function Login() {
     await sendPasswordResetEmail(auth, mail);
     setError("Password reset email sent. Check your inbox/spam.");
   } catch (err: any) {
-    if (err?.code === "auth/invalid-email") setError("Please enter a valid email.");
-    else if (err?.code === "auth/user-not-found") setError("No account found for that email.");
-    else setError(err?.message || "Could not send reset email.");
+    if (err.code === "auth/invalid-email") setError("Please enter a valid email.");
+    else if (err.code === "auth/user-not-found") setError("No account found for that email.");
+    else setError(err.message || "Could not send reset email.");
   }
 }
 
