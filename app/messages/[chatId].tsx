@@ -3,14 +3,31 @@ import { View, Text, TextInput, Pressable, FlatList } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { auth } from "../../firebase";
 import { listenMessages, sendMessage } from "../../services/chatService";
+import { getUser } from "../../services/userService";
 
 export default function ChatThread() {
-  const { chatId, otherName } = useLocalSearchParams();
-  const id = String(chatId ?? "");
+  const { chatId, otherName, otherUid } = useLocalSearchParams();
 
+  const id = String(chatId ?? "");
+  const [name, setName] = useState(String(otherName ?? ""));
   const [messages, setMessages] = useState<any[]>([]);
   const [text, setText] = useState("");
 
+  useEffect(() => {
+    async function loadName() {
+      if (name) return;
+      if (!otherUid) return;
+      try {
+        const u: any = await getUser(String(otherUid));
+        setName(u?.username ?? "User");
+      } catch (e) {
+        setName("User");
+      }
+    }
+    loadName();
+  }, [otherUid, name]);
+
+  
   useEffect(() => {
     if (!id) return;
     const unsub = listenMessages(id, setMessages);
@@ -45,10 +62,49 @@ export default function ChatThread() {
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <Stack.Screen
         options={{
-          title: String(otherName ?? "Chat"),
+          title: name || "Chat",
           headerTitleAlign: "center",
         }}
       />
+
+      
+      <View
+  style={{
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingTop: 40, 
+    borderBottomWidth: 1,
+    borderColor: "#eee",
+    backgroundColor: "#fafafa",
+  }}
+>
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 20,
+            backgroundColor: "#3D8D34",
+            justifyContent: "center",
+            alignItems: "center",
+            marginRight: 12,
+          }}
+        >
+          <Text style={{ color: "white", fontWeight: "900" }}>
+            {String(name || "U").charAt(0).toUpperCase()}
+          </Text>
+        </View>
+
+        <View>
+          <Text style={{ fontWeight: "900", fontSize: 16 }}>
+            {name || "User"}
+          </Text>
+          <Text style={{ color: "#777", fontSize: 12 }}>
+            Community Connect Chat
+          </Text>
+        </View>
+      </View>
 
       <FlatList
         data={messages}
@@ -56,7 +112,7 @@ export default function ChatThread() {
         contentContainerStyle={{
           paddingHorizontal: 16,
           paddingBottom: 90,
-          paddingTop: 60,
+          paddingTop: 16,
           gap: 12,
         }}
         renderItem={({ item }) => {

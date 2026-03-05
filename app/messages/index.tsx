@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Pressable, FlatList, ActivityIndicator, StyleSheet } from "react-native";
-import { Stack, router } from "expo-router";
+import { router } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
 import { auth, db } from "../../firebase";
 import { listenMyChats } from "../../services/chatService";
 import { doc, getDoc } from "firebase/firestore";
@@ -43,12 +44,12 @@ export default function MessagesInbox() {
           const snap = await getDoc(doc(db, "users", otherUid));
           if (snap.exists()) {
             const data: any = snap.data();
-            updates[otherUid] = data.username || "";
+            updates[otherUid] = data.username || "User";
           } else {
-            updates[otherUid] = "";
+            updates[otherUid] = "User";
           }
         } catch {
-          updates[otherUid] = "";
+          updates[otherUid] = "User";
         }
       }
 
@@ -62,20 +63,30 @@ export default function MessagesInbox() {
     const myUid = auth.currentUser?.uid;
     const participants = chat.participants || [];
     const otherUid = participants.find((u: string) => u !== myUid);
-    return nameM[otherUid] || "";
+    if (!otherUid) return "User";
+    return nameM[otherUid] || "User";
   }
 
   return (
     <View style={styles.screen}>
-      <Stack.Screen options={{ title: "Messages", headerTitleAlign: "center" }} />
+
+      <View style={styles.header}>
+        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+          <FontAwesome name="chevron-left" size={18} color="white" />
+        </Pressable>
+
+        <Text style={styles.headerTitle}>Messages</Text>
+
+        <View style={styles.rightSpacer} />
+      </View>
 
       {loading ? (
-        <View style={{ padding: 16 }}>
+        <View style={{ paddingTop: 10, paddingHorizontal: 16 }}>
           <ActivityIndicator />
           <Text style={{ marginTop: 8 }}>Loading chats...</Text>
         </View>
       ) : chats.length === 0 ? (
-        <View style={{ padding: 16 }}>
+        <View style={{ paddingHorizontal: 16, paddingTop: 10 }}>
           <Text style={{ fontWeight: "800" }}>No chats yet.</Text>
           <Text style={{ opacity: 0.6, marginTop: 6 }}>
             Chats appear when a volunteer is approved.
@@ -87,8 +98,8 @@ export default function MessagesInbox() {
           keyExtractor={(item) => item.id}
           contentContainerStyle={{
             paddingHorizontal: 16,
+            paddingTop: 14,
             paddingBottom: 16,
-            paddingTop: 60,
             gap: 12,
           }}
           renderItem={({ item }) => (
@@ -140,6 +151,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
+
+  header: {
+    backgroundColor: "#e09020b7",
+    paddingTop: 43, 
+    paddingBottom: 12,
+    paddingHorizontal: 12,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  backBtn: {
+    width: 44,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: "center",
+    color: "white",
+    fontSize: 17,
+    fontWeight: "700",
+  },
+  rightSpacer: {
+    width: 44,
+  },
+
   card: {
     borderWidth: 1,
     borderColor: "#eee",
