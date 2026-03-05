@@ -1,5 +1,5 @@
-import { db } from "../firebase";
-import {addDoc,collection,doc,getDocs,getDoc,query,updateDoc,serverTimestamp,Timestamp, where} from "firebase/firestore";
+import { auth,db } from "../firebase";
+import {addDoc,collection,doc,getDocs,getDoc,query,updateDoc,serverTimestamp,Timestamp, where,limit} from "firebase/firestore";
 import { getUser } from "./userService";
 
 export async function createTask(ownerUid, data) {
@@ -52,6 +52,7 @@ export async function getMyPostedTasks(ownerUid) {
   const snap = await getDocs(q);
   const rows = [];
   snap.docs.forEach((d) => { const t = {id: d.id, ...d.data() } ;
+  if (t.status === "deleted") return;
   rows.push(t);});
   rows.sort((a, b) => b.createdAt.seconds - a.createdAt.seconds); //sorting the newer from the old
   return rows;
@@ -89,4 +90,42 @@ export async function markTaskCompleted(taskId, ownerUid) {
     });
 
   return "Completed";
+}
+export async function deleteTask(taskId) {
+  const uid = auth.currentUser?.uid;
+  const taskRef = doc(db, "tasks", taskId);
+  const taskSnap = await getDoc(taskRef);
+  if (!taskSnap.exists()) throw new Error("Task not found.");
+  const task = taskSnap.data();
+  if (task.ownerUid !== uid) throw new Error("Not allowed.");
+  const status = task.status;
+  if (status === "completed") {
+    throw new Error("Completed tasks cannot be deleted.");
+  }
+  if (status === "accepted") {
+    throw new Error("Accepted tasks cannot be deleted. Cancel the task instead.");
+  }
+  const appsQ = query(
+    collection(db, "applications"),
+    where("taskId", "==", taskId),
+    limit(1)
+  );
+  const appsSnap = await getDocs(appsQ);
+  const hasApps = !appsSnap.empty;
+
+  if (!hasApps) {
+    await updateDoc(taskRef, {
+      status: "deleted",
+      deletedAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return { action: "deleted" };
+  } else {
+    await updateDoc(taskRef, {
+      status: "cancelled",
+      cancelledAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return { action: "cancelled" };
+  }
 }
