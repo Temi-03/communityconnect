@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
+import { View, Text, Pressable, StyleSheet, ActivityIndicator, ScrollView,Alert } from "react-native";
 import { router, Stack } from "expo-router";
 import { auth } from "../../firebase";
 import {getTasksForUser } from "../../services/taskService";
-import{ getMyApplications} from "../../services/applicationService"
+import{ getMyApplications,withdrawApplication} from "../../services/applicationService"
 
 type TabKey = "applied" | "completed";
 
@@ -49,6 +49,16 @@ export default function VolunteerTasksScreen() {
     }
   }
 
+  async function handleWithdraw(appId: string) {
+  try {
+    const uid = auth.currentUser?.uid;
+    await withdrawApplication(appId, uid);
+    Alert.alert("Done", "Application withdrawn.");
+    await loadApplied(); 
+  } catch (e: any) {
+    Alert.alert("Error", e?.message || "Failed to withdraw application.");
+  }
+}
   async function refresh() {
     if (tab === "applied") return loadApplied();
     return loadCompleted();
@@ -78,6 +88,23 @@ export default function VolunteerTasksScreen() {
             >
               <Text style={styles.primaryButtonsText}>View Task</Text>
             </Pressable>
+            {a.status === "pending" && (
+                <Pressable
+                  onPress={() =>
+                    Alert.alert(
+                      "Withdraw request?",
+                      "This will remove your pending application.",
+                      [
+                        { text: "Cancel", style: "cancel" },
+                        { text: "Withdraw", style: "destructive", onPress: () => handleWithdraw(a.id) },
+                      ]
+                    )
+                  }
+                  style={styles.withdrawButtons}
+                >
+                <Text style={styles.withdrawText}>Withdraw</Text>
+              </Pressable>
+            )}
           </View>
         ))}
       </View>
@@ -236,4 +263,17 @@ const styles = StyleSheet.create({
 listArea: { flex: 1, marginTop: 6 },
 
 listContent: { paddingBottom: 40 },
+withdrawButtons: {
+  marginTop: 10,
+  paddingVertical: 10,
+  borderRadius: 10,
+  borderWidth: 1,
+  borderColor: "crimson",
+  alignItems: "center",
+  backgroundColor: "white",
+},
+withdrawText: {
+  color: "crimson",
+  fontWeight: "900",
+},
 });
