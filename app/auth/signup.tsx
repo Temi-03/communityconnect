@@ -37,7 +37,7 @@ export default function Signup() {
       await createUser(userCred.user.uid, { // create user document in Firestore
         username: name, 
         email: mail,
-        location: town || null,
+        location: town,
       });
       await sendEmailVerification(userCred.user);
       try {
