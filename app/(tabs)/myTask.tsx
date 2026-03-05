@@ -24,37 +24,33 @@ export default function MyTasksMenuScreen() {
 
       <View style={styles.cardsWrap}>
         <Pressable onPress={() => router.push("/task/volunteer")} style={styles.card}>
+          <FontAwesome name="chevron-right" size={16} color="#999" style={styles.arrow} />
           <View style={[styles.iconBubble, { backgroundColor: "#e09020b7" }]}>
             <FontAwesome name="handshake-o" size={18} color="white" />
           </View>
 
           <Text style={styles.cardTitle}>I’m Volunteering</Text>
           <Text style={styles.cardSub}>
-            View tasks you applied to and your completed volunteering tasks.
+            View the tasks you have applied to and keep track of the volunteering work you have completed.
+You can also see the status of your requests and manage your activity.
           </Text>
-
-          <View style={styles.spacer} />
-
-          <View style={[styles.cardButton, { backgroundColor: "#e09020b7" }]}>
-            <Text style={styles.cardButtonText}>Open</Text>
-          </View>
         </Pressable>
 
         <Pressable onPress={() => router.push("/task/requester")} style={styles.card}>
+          <FontAwesome name="chevron-right" size={16} color="#999" style={styles.arrow} />
           <View style={[styles.iconBubble, { backgroundColor: "#3D8D34" }]}>
             <FontAwesome name="tasks" size={18} color="white" />
           </View>
 
           <Text style={styles.cardTitle}>I’m Requesting Help</Text>
           <Text style={styles.cardSub}>
-            View your posted tasks, approve requests, and mark tasks completed.
+            <Text style={styles.cardSub}>
+            Manage the tasks you have posted to the community. Review volunteer
+            requests, approve helpers, and mark tasks as completed once the work
+            is done.
+          </Text>
           </Text>
 
-          <View style={styles.spacer} />
-
-          <View style={[styles.cardButton, { backgroundColor: "#3D8D34" }]}>
-            <Text style={styles.cardButtonText}>Open</Text>
-          </View>
         </Pressable>
       </View>
     </View>
@@ -70,7 +66,7 @@ const styles = StyleSheet.create({
 
   cardsWrap: {
     flex: 1,
-    gap: 14,
+    gap:40,
   },
 
   card: {
@@ -92,17 +88,11 @@ const styles = StyleSheet.create({
   },
 
   cardTitle: { fontSize: 20, fontWeight: "900", color: "#111" },
-  cardSub: { marginTop: 8, color: "#666", fontWeight: "600", lineHeight: 20 },
+  cardSub: { marginTop: 8, color: "#666", fontWeight: "600", lineHeight: 22 },
 
-  spacer: { flex: 1 },
-
-  cardButton: {
-    marginTop: 14,
-    width: "100%",
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-
-  cardButtonText: { color: "white", fontWeight: "900", fontSize: 15 },
+  arrow: {
+  position: "absolute",
+  right: 16,
+  top: 16,
+},
 });
