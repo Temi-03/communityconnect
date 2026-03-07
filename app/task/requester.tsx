@@ -4,7 +4,7 @@ import { router, Stack } from "expo-router";
 import { auth } from "../../firebase";
 import {getMyPostedTasks,getTasksForUser,markTaskCompleted,} from "../../services/taskService";
 import { buildChatId } from "../../services/chatService";
-import { getPendingApplicationsForOwner,approveApplication,rejectApplication } from "@/services/applicationService";
+import { getPendingApplicationsForOwner,acceptApplication,rejectApplication } from "@/services/applicationService";
 import { deleteTask } from "../../services/taskService";
 import { Alert } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
@@ -72,7 +72,7 @@ export default function RequesterTasksScreen() {
   }
 
 
-async function handleApprove(r: any) {
+async function handleAccept(r: any) {
   try {
     const uid = auth.currentUser?.uid;;
     if (!r?.taskId || !r?.volunteerUid) {
@@ -82,7 +82,7 @@ async function handleApprove(r: any) {
 
     setActingId(r.id);
 
-    await approveApplication(r.id, uid);
+    await acceptApplication(r.id, uid);
 
     const chatId = buildChatId(r.taskId, uid, r.volunteerUid);
     router.push({
@@ -93,9 +93,9 @@ async function handleApprove(r: any) {
     await loadRequests();
     await loadPosted();
   } catch (e:any) {
-        console.log("Approve error:", e);
-    setError(e.message || "Failed to approve request.");
-    Alert.alert("Error", e.message || "Failed to approve request.");
+        console.log("Accept error:", e);
+    setError(e.message || "Failed to accept request.");
+    Alert.alert("Error", e.message || "Failed to accept request.");
   } finally {
     setActingId(null);
   }
@@ -222,11 +222,11 @@ async function handleDelete(taskId:any) {
 
               <View style={styles.rowButtons}>
                 <Pressable
-                  onPress={() => handleApprove(r)}
+                  onPress={() => handleAccept(r)}
                   disabled={busy}
-                  style={[styles.approveButtons, busy && { opacity: 0.6 }]}
+                  style={[styles.acceptButtons, busy && { opacity: 0.6 }]}
                 >
-                  <Text style={styles.approveText}>{busy ? "Working…" : "Approve"}</Text>
+                  <Text style={styles.acceptText}>{busy ? "Working…" : "Accept"}</Text>
                 </Pressable>
 
                 <Pressable
@@ -379,14 +379,14 @@ const styles = StyleSheet.create({
 
   rowButtons: { flexDirection: "row", gap: 10, marginTop: 12 },
 
-  approveButtons: {
+  acceptButtons: {
     flex: 1,
     backgroundColor:"#3D8D34",
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
   },
-  approveText: { color: "white", fontWeight: "900" },
+  acceptText: { color: "white", fontWeight: "900" },
 
   rejectButtons: {
     flex: 1,
