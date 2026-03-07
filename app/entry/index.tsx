@@ -31,7 +31,7 @@ export default function HomeTab() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#e09020b7",
+    backgroundColor: "#e8ab55",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 30,
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
 
   signUpText: {
-    color: "#e09020b7",
+    color: "#e8ab55",
     fontSize: 16,
     fontWeight: "600",
   },

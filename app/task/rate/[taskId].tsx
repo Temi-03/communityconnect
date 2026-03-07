@@ -53,7 +53,7 @@ export default function RateTaskScreen() {
         options={{
           title: "Rate Task",
           headerTitleAlign: "center",
-          headerStyle: { backgroundColor:"#e09020b7" },
+          headerStyle: { backgroundColor:"#e8ab55" },
           headerTintColor: "white",
         }}
       />

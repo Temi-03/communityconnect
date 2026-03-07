@@ -1,15 +1,16 @@
 import { Tabs } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: "#e09020b7" },
+        headerStyle: { backgroundColor: "#e8ab55" },
         headerTitleStyle: { color: "white" },
         headerTintColor: "white",
 
-        tabBarStyle: { backgroundColor: "#e09020b7" },
+        tabBarStyle: { backgroundColor: "#e8ab55",height: 60 + insets.bottom,paddingTop: 6,paddingBottom: insets.bottom > 0 ? insets.bottom : 8,},
         tabBarActiveTintColor: "white",
         tabBarInactiveTintColor: "#ffffffaa",
       }}

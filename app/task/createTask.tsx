@@ -58,7 +58,7 @@ export default function CreateTaskScreen() {
 
           <TextInput
             placeholder="Title"
-            placeholderTextColor="#e09020b7"
+            placeholderTextColor="#e8ab55"
             style={styles.input}
             value={title}
             onChangeText={setTitle}
@@ -67,7 +67,7 @@ export default function CreateTaskScreen() {
 
           <TextInput
             placeholder="Details"
-            placeholderTextColor="#e09020b7"
+            placeholderTextColor="#e8ab55"
             style={[styles.input, { height: 80 }]}
             value={details}
             onChangeText={setDetails}
@@ -96,14 +96,14 @@ export default function CreateTaskScreen() {
                 marginTop: -8,
                 overflow: "hidden",
               },
-              placeholder: { color: "#e09020b7" },
+              placeholder: { color: "#e8ab55" },
             }}
           /> 
 
           <Pressable
             onPress={() => setShowPicker(true)}
             style={[styles.input, { justifyContent: "center" }]}>
-            <Text style={{ color: "#e09020b7" }}>{formatDate(dueAt)}</Text>
+            <Text style={{ color: "#e8ab55" }}>{formatDate(dueAt)}</Text>
           </Pressable>
           {showPicker && (
             <DateTimePicker
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     marginBottom: 12,
-    color: "#e09020b7",
+    color: "#e8ab55",
   },
 
   createBtn: {

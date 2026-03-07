@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
   },
  
   badgePending: {
-    borderColor:"#e09020b7",
+    borderColor:"#e8ab55",
     backgroundColor: "rgba(224,144,32,0.14)",
   },
   badgeAccepted: {

@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    backgroundColor: "#e09020b7",
+    backgroundColor: "#e8ab55",
     paddingTop: 43, 
     paddingBottom: 12,
     paddingHorizontal: 12,
@@ -205,10 +205,10 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#e09020b7",
+    borderColor: "#e8ab55",
   },
   taskBtnText: {
-    color: "#e09020b7",
+    color: "#e8ab55",
     fontWeight: "900",
   },
 });

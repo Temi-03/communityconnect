@@ -80,7 +80,7 @@ export default function Login() {
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
           <TextInput
             placeholder="Email"
-            placeholderTextColor="#e09020b7"
+            placeholderTextColor="#e8ab55"
             style={styles.input}
             value={email}
             onChangeText={setEmail}
@@ -90,7 +90,7 @@ export default function Login() {
 
           <TextInput
             placeholder="Password"
-            placeholderTextColor="#e09020b7"
+            placeholderTextColor="#e8ab55"
             secureTextEntry
             style={styles.input}
             value={password}
@@ -125,7 +125,7 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#e09020b7",
+    backgroundColor: "#e8ab55",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 30,
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 12,
     marginBottom: 15,
-    color: "#e09020b7",
+    color: "#e8ab55",
   },
 
   loginButton: {
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   },
 
   loginText: {
-    color: "#e09020b7",
+    color: "#e8ab55",
     fontSize: 16,
     fontWeight: "600",
   },

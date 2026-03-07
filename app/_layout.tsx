@@ -3,6 +3,7 @@ import { ActivityIndicator, View } from "react-native";
 import { Stack, router, usePathname } from "expo-router";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   const pathname = usePathname();
@@ -40,13 +41,15 @@ export default function RootLayout() {
     return () => unsubscribe();
   }, [pathname]);
 
-  if (!ready) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  return <Stack screenOptions={{ headerShown: false }} />;
+return(
+  <SafeAreaProvider>
+    {!ready ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator />
+        </View>
+      ) : (
+        <Stack screenOptions={{ headerShown: false }} />
+      )}
+  </SafeAreaProvider>
+  );
 }

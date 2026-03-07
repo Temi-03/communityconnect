@@ -280,7 +280,7 @@ async function handleDelete(taskId:any) {
       options={{
         title: "Requesting Help",
         headerTitleAlign: "center",
-        headerStyle: { backgroundColor: "#e09020b7" },
+        headerStyle: { backgroundColor: "#e8ab55" },
         headerTintColor: "white",
       }}
     />
@@ -347,12 +347,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor:"#e09020b7",
+    borderColor:"#e8ab55",
     borderRadius: 10,
     alignItems: "center",
   },
   tabButtonsActive: { backgroundColor:"#3D8D34", borderColor:"#3D8D34" },
-  tabText: { fontWeight: "900", color:"#e09020b7", fontSize: 12 },
+  tabText: { fontWeight: "900", color:"#e8ab55", fontSize: 12 },
   tabTextActive: { color: "white" },
 
   refreshButtons: {
@@ -391,13 +391,13 @@ const styles = StyleSheet.create({
   rejectButtons: {
     flex: 1,
     borderWidth: 1,
-    borderColor:"#e09020b7",
+    borderColor:"#e8ab55",
     paddingVertical: 12,
     borderRadius: 10,
     alignItems: "center",
     backgroundColor: "white",
   },
-  rejectText: { color:"#e09020b7", fontWeight: "900" },
+  rejectText: { color:"#e8ab55", fontWeight: "900" },
 
   primaryButtons: {
     marginTop: 12,
@@ -413,22 +413,22 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor:"#e09020b7",
+    borderColor:"#e8ab55",
     alignItems: "center",
     backgroundColor: "white",
   },
-  completeButtonsText: { color:"#e09020b7", fontWeight: "900" },
+  completeButtonsText: { color:"#e8ab55", fontWeight: "900" },
 
   outlineButtons: {
     marginTop: 12,
     paddingVertical: 10,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor:"#e09020b7",
+    borderColor:"#e8ab55",
     alignItems: "center",
     backgroundColor: "white",
   },
-  outlineButtonsText: { color:"#e09020b7", fontWeight: "900" },
+  outlineButtonsText: { color:"#e8ab55", fontWeight: "900" },
 
   listArea: { flex: 1, marginTop: 6 },
   listContent: { paddingBottom: 40 },

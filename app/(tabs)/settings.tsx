@@ -225,7 +225,7 @@ async function reauthenticateUser() {
                 overflow: "hidden",
                
               },
-               placeholder: { color: "#e09020b7", },
+               placeholder: { color: "#e8ab55", },
             }}
         />
 

@@ -10,7 +10,7 @@ export default function MyTasksMenuScreen() {
         options={{
           title: "My Tasks",
           headerTitleAlign: "center",
-          headerStyle: { backgroundColor: "#e09020b7" },
+          headerStyle: { backgroundColor: "#e8ab55" },
           headerTintColor: "white",
         }}
       />
@@ -25,7 +25,7 @@ export default function MyTasksMenuScreen() {
       <View style={styles.cardsWrap}>
         <Pressable onPress={() => router.push("/task/volunteer")} style={styles.card}>
           <FontAwesome name="chevron-right" size={16} color="#999" style={styles.arrow} />
-          <View style={[styles.iconBubble, { backgroundColor: "#e09020b7" }]}>
+          <View style={[styles.iconBubble, { backgroundColor: "#e8ab55" }]}>
             <FontAwesome name="handshake-o" size={18} color="white" />
           </View>
 

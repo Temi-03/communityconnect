@@ -75,7 +75,7 @@ export default function VerifyEmailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, justifyContent: "center", backgroundColor: "#e09020b7" },
+  container: { flex: 1, padding: 24, justifyContent: "center", backgroundColor: "#e8ab55" },
   title: { fontSize: 26, fontWeight: "700", color: "white", marginBottom: 10 },
   text: { color: "white", marginBottom: 18, lineHeight: 20 },
   buttonOutline: {
@@ -93,5 +93,5 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
   },
-  buttonSolidText: { color: "#e09020b7", fontWeight: "700" },
+  buttonSolidText: { color: "#e8ab55", fontWeight: "700" },
 });
