@@ -120,7 +120,7 @@ export default function VolunteerTasksScreen() {
           <View key={t.id} style={styles.card}>
             <Text style={styles.cardTitle}>{t.title || "Untitled Task"}</Text>
             <Text style={styles.cardMeta}>
-              {(t.category || "—")} • {(t.location || "—")}
+               {(t.location || "—")}
             </Text>
 
             <Pressable
