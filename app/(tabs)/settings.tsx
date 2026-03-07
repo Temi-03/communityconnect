@@ -40,7 +40,9 @@ export default function SettingsScreen() {
         setTown(loc);
         setRatingAvg(Number(data.ratingAvg ?? 0));
         setTimeout(() => {
-          placesRef.current.setAddressText(loc);
+          if (placesRef.current) {
+            placesRef.current.setAddressText(loc);
+          }
         }, 300);
       }
 
