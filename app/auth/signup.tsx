@@ -51,6 +51,8 @@ export default function Signup() {
     } catch (err: any) {
       if (err?.code === "auth/invalid-email") {
       setError("Please enter a valid email.");}
+      else if(err?.code === "auth/email-already-in-use"){
+      setError("Email already used.");}
       else setError(err.message || "Signup failed.");
       console.log("SIGNUP ERROR:", err);
     } finally {
