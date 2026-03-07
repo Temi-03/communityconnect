@@ -252,9 +252,6 @@ async function handleDelete(taskId:any) {
         {completed.map((t) => (
           <View key={t.id} style={styles.card}>
             <Text style={styles.cardTitle}>{t.title || "Untitled Task"}</Text>
-            <Text style={styles.cardMeta}>
-              {(t.category || "—")} • {(t.location || "—")}
-            </Text>
             <Text style={styles.cardMeta}>Status: Completed</Text>
 
             <Pressable onPress={() => router.push(`/task/${t.id}`)} style={styles.outlineButtons}>
