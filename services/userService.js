@@ -44,7 +44,7 @@ export async function deleteUser(uid) {
     username: "Deleted user",
     location: "",
     email: deleteField(),
-    pushToken: deleteField(),
+    expoPushToken: deleteField(),
     photoURL: deleteField(),
     updatedAt: serverTimestamp(),
   });

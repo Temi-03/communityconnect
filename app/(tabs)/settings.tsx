@@ -4,7 +4,7 @@ import { router, Stack } from "expo-router";
 import { auth, db } from "../../firebase";
 import { doc,onSnapshot } from "firebase/firestore";
 import {clearPushToken,deleteUser as deleteUserDoc,updateUser} from "../../services/userService";
-import { signOut, updatePassword, deleteUser } from "firebase/auth";
+import { signOut, updatePassword, deleteUser,EmailAuthProvider,reauthenticateWithCredential, } from "firebase/auth";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { FontAwesome } from "@expo/vector-icons";
 export default function SettingsScreen() {
@@ -18,6 +18,7 @@ export default function SettingsScreen() {
   const [message, setMessage] = useState("");
   const [ratingAvg, setRatingAvg] = useState(0);
   const placesRef = useRef<any>(null);
+  const [currentPassword, setCurrentPassword] = useState("");
   function showMessage(text: string) {
     setMessage(text);
     setTimeout(() => setMessage(""), 2500);
@@ -91,14 +92,27 @@ export default function SettingsScreen() {
     }
 
     try {
+      const user = await reauthenticateUser();
       await updatePassword(user, newPassword);
+      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
       showMessage("Password changed.");
-    } catch {
-      showMessage("Password change failed.");
+    }  catch (e: any) {
+    console.log("Password change failed:", e);
+
+    if (
+      e.code === "auth/wrong-password" ||
+      e.code === "auth/invalid-credential"
+    ) {
+      showMessage("Current password is incorrect.");
+    } else if (e?.code === "auth/weak-password") {
+      showMessage("Choose a stronger password.");
+    } else {
+      showMessage(e?.message || "Password change failed.");
     }
   }
+}
 
   async function handleLogout() {
     const uidNow = auth.currentUser?.uid;
@@ -114,24 +128,46 @@ export default function SettingsScreen() {
   async function handleDeleteAccount() {
     const user = auth.currentUser;
     if (!user) return;
-
     try {
+      const user = await reauthenticateUser();
       const uidNow = user.uid;
 
       await clearPushToken(uidNow);
       await deleteUserDoc(uidNow);
       await deleteUser(user);
       await signOut(auth);
+      showMessage("Account deleted.");
+       router.replace("/entry");
     } catch (e: any) {
     console.log("Delete account failed:", e);
-    try {
-      await signOut(auth);
-    } catch {}
-
-    showMessage(e?.message || "Delete failed. You may need to log in again to delete your account.");
-    router.replace("/entry");
+    if (
+      e?.code === "auth/wrong-password" ||
+      e?.code === "auth/invalid-credential"
+    ) {
+      showMessage("Current password is incorrect.");
+    } else if (e?.code === "auth/requires-recent-login") {
+      showMessage("Please log in again and try.");
+    } else {
+      showMessage(e?.message || "Delete failed.");
+    }
   }
+  
 }
+async function reauthenticateUser() {
+  const user = auth.currentUser;
+  if (!user || !user.email) {
+    throw new Error("No logged in user found.");
+  }
+  if (!currentPassword.trim()) {
+    throw new Error("Enter your current password.");
+  }
+  const credential = EmailAuthProvider.credential(
+    user.email,
+    currentPassword
+  );
+  await reauthenticateWithCredential(user, credential);
+  return user;
+  }
 
   if (loading) {
     return (
@@ -198,6 +234,14 @@ export default function SettingsScreen() {
       </Pressable>
 
       <Text style={styles.title}>Password</Text>
+      
+       <TextInput
+          value={currentPassword}
+          onChangeText={setCurrentPassword}
+          placeholder="Current password"
+          secureTextEntry
+          style={styles.input}
+        />
 
       <TextInput
         value={newPassword}
