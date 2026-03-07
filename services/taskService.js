@@ -74,9 +74,9 @@ export async function getTasksForUser(uid) {
 
 export async function markTaskCompleted(taskId, ownerUid) {
   const taskRef = doc(db, "tasks", taskId);
-  const snap = await getDoc(taskRef);
-  if (!snap.exists()) throw new Error("Task not found.");
-  const task = snap.data();
+  const tsnap = await getDoc(taskRef);
+  if (!tsnap.exists()) throw new Error("Task not found.");
+  const task = tsnap.data();
   
   if (task.ownerUid !== ownerUid) throw new Error("Not allowed.");
   if (task.status !== "accepted") {
@@ -89,8 +89,25 @@ export async function markTaskCompleted(taskId, ownerUid) {
       updatedAt: serverTimestamp(),
     });
 
-  return "Completed";
+    const q = query(
+    collection(db, "applications"),
+    where("taskId", "==", taskId),
+    where("status", "==", "accepted")
+  );
+
+  const asnap = await getDocs(q);
+
+    for (const d of asnap.docs) {
+      await updateDoc(d.ref, {
+        status: "completed",
+        completedAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+    return "Completed";
+  }
 }
+
 export async function deleteTask(taskId) {
   const uid = auth.currentUser?.uid;
   const taskRef = doc(db, "tasks", taskId);
