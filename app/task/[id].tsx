@@ -39,7 +39,7 @@ function taskStatusLabel(status?: string) {
 function appStatusLabel(status?: string) {
   if (!status) return "—";
   if (status === "pending") return "Pending Approval";
-  if (status === "approved") return "Approved";
+  if (status === "accepted") return "Accepted";
   if (status === "rejected") return "Rejected";
   
   return status;
@@ -48,7 +48,7 @@ function appStatusLabel(status?: string) {
 function badgeStyleByType(type: "task" | "app", status?: string) {
   if (type === "app") {
     if (status === "pending") return [styles.badge, styles.badgePending];
-    if (status === "approved") return [styles.badge, styles.badgeApproved];
+    if (status === "accepted") return [styles.badge, styles.badgeAccepted];
     if (status === "rejected") return [styles.badge, styles.badgeRejected];
     return [styles.badge, styles.badgeNeutral];
   }
@@ -232,8 +232,8 @@ export default function TaskDetailsScreen() {
     <Text style={styles.helperText}>This task is no longer open.</Text>
   ) : myStatus === "pending" ? (
     <Text style={styles.helperText}>Your request is pending approval.</Text>
-  ) : myStatus === "approved" ? (
-    <Text style={styles.helperText}>You were approved.</Text>
+  ) : myStatus === "accepted" ? (
+    <Text style={styles.helperText}>You were accepted.</Text>
   ) : myStatus === "rejected" ? (
     <Text style={styles.helperText}>Your request was rejected.</Text>
   ) : (
@@ -316,16 +316,12 @@ const styles = StyleSheet.create({
     borderColor:"#3D8D34",
     backgroundColor: "rgba(61,141,52,0.12)",
   },
-  badgeAccepted: {
-    borderColor:"#e09020b7",
-    backgroundColor: "rgba(224,144,32,0.14)",
-  },
-
+ 
   badgePending: {
     borderColor:"#e09020b7",
     backgroundColor: "rgba(224,144,32,0.14)",
   },
-  badgeApproved: {
+  badgeAccepted: {
     borderColor:"#3D8D34",
     backgroundColor: "rgba(61,141,52,0.12)",
   },
