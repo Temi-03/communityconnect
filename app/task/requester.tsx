@@ -7,6 +7,7 @@ import { buildChatId } from "../../services/chatService";
 import { getPendingApplicationsForOwner,approveApplication,rejectApplication } from "@/services/applicationService";
 import { deleteTask } from "../../services/taskService";
 import { Alert } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 
 type TabKey = "posted" | "requests" | "completed";
 
@@ -91,8 +92,10 @@ async function handleApprove(r: any) {
 
     await loadRequests();
     await loadPosted();
-  } catch (e) {
-    setError
+  } catch (e:any) {
+        console.log("Approve error:", e);
+    setError(e.message || "Failed to approve request.");
+    Alert.alert("Error", e.message || "Failed to approve request.");
   } finally {
     setActingId(null);
   }
@@ -210,8 +213,11 @@ async function handleDelete(taskId:any) {
 
           return (
             <View key={r.id} style={styles.card}>
-              <Text style={styles.cardTitle}>Task: {r.title || "Untitled Task"}</Text>
-              <Text style={styles.cardMeta}>Volunteer: {r.volunteerUid || "—"}</Text>
+              <Text style={styles.cardTitle}>Task: {r.taskTitle || "Untitled Task"}</Text>
+             <Text style={styles.cardMeta}>
+                Volunteer: {r.volunteerName || "—"}  {r.volunteerRatingAvg ?? 0} 
+                <FontAwesome name="star" size={16} color="#f5b301"  />
+              </Text>
               <Text style={styles.cardMeta}>Status: {r.status || "pending"}</Text>
 
               <View style={styles.rowButtons}>
