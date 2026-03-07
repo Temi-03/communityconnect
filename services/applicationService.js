@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import { collection, doc, getDocs,query,where, serverTimestamp ,getDoc,deleteDoc} from "firebase/firestore";
+import { collection, doc, getDocs,query,where, serverTimestamp ,getDoc,deleteDoc,setDoc,updateDoc} from "firebase/firestore";
 import { buildChatId } from "./chatService";
 function appDocId(taskId, volunteerUid) {
   return `${taskId}_${volunteerUid}`;
