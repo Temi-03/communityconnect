@@ -80,7 +80,7 @@ export default function VolunteerTasksScreen() {
       <View style={{ gap: 12 }}>
         {applied.map((a) => (
           <View key={a.id} style={styles.card}>
-            <Text style={styles.cardTitle}>Task: {a.title || "Untitled Task"}</Text>
+            <Text style={styles.cardTitle}>Task: {a.taskTitle || "Untitled Task"}</Text>
             <Text style={styles.cardMeta}>Status: {a.status || "—"}</Text>
             <Pressable
               onPress={() => router.push(`/task/${a.taskId}`)}
