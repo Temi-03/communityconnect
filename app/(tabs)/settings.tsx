@@ -216,6 +216,9 @@ async function reauthenticateUser() {
               language: "en",
               components: "country:ie",
             }}
+            textInputProps={{
+                placeholderTextColor: "#000000",
+            }}
             styles={{
               textInput: styles.input,
               container: { width: "100%" },
@@ -225,7 +228,6 @@ async function reauthenticateUser() {
                 overflow: "hidden",
                
               },
-               placeholder: { color: "#e8ab55", },
             }}
         />
 
@@ -241,6 +243,7 @@ async function reauthenticateUser() {
           placeholder="Current password"
           secureTextEntry
           style={styles.input}
+          placeholderTextColor={"#000000"}
         />
 
       <TextInput
@@ -249,6 +252,7 @@ async function reauthenticateUser() {
         placeholder="New password"
         secureTextEntry
         style={styles.input}
+        placeholderTextColor={"#000000"}
       />
 
       <TextInput
@@ -257,6 +261,7 @@ async function reauthenticateUser() {
         placeholder="Retype new password"
         secureTextEntry
         style={styles.input}
+        placeholderTextColor={"#000000"}
       />
 
       <Pressable onPress={changePassword} style={styles.button}>
@@ -304,7 +309,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginTop: 20,
     marginBottom: 10,
-    color: "#111",
+    color: "#e8ab55",
   },
 
   input: {
@@ -314,6 +319,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 12,
     backgroundColor: "white",
+    color: "#000000",
   },
 
   button: {
