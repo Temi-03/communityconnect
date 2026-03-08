@@ -12,6 +12,7 @@ export default function CreateTaskScreen() {
   const [dueAt, setDueAt] = useState<Date | null>(null);
   const [town, setTown] = useState("");
   const [showPicker, setShowPicker] = useState(false);
+  const [pickerMode, setPickerMode] = useState<"date" | "time">("date");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -22,6 +23,54 @@ export default function CreateTaskScreen() {
       d.getMinutes()
     ).padStart(2, "0")}`;
   }
+
+  function openDateTimePicker() {
+  setPickerMode("date");
+  setShowPicker(true);
+}
+
+ function handlePickerChange(event: any, selectedDate?: Date) {
+    if (event.type === "dismissed") {
+      setShowPicker(false);
+      return;
+    }
+
+    if (!selectedDate) {
+      setShowPicker(false);
+      return;
+    }
+
+    if (pickerMode === "date") {
+      const current = dueAt || new Date();
+
+      const updatedDate = new Date(current);
+      updatedDate.setFullYear(selectedDate.getFullYear());
+      updatedDate.setMonth(selectedDate.getMonth());
+      updatedDate.setDate(selectedDate.getDate());
+
+      setDueAt(updatedDate);
+
+      if (Platform.OS === "android") {
+        setShowPicker(false);
+        setTimeout(() => {
+          setPickerMode("time");
+          setShowPicker(true);
+        }, 100);
+      }
+    } else {
+      const current = dueAt || new Date();
+
+      const updatedDate = new Date(current);
+      updatedDate.setHours(selectedDate.getHours());
+      updatedDate.setMinutes(selectedDate.getMinutes());
+      updatedDate.setSeconds(0);
+      updatedDate.setMilliseconds(0);
+
+      setDueAt(updatedDate);
+      setShowPicker(false);
+    }
+  }
+
 
   async function handleCreateTask() {
     try {
@@ -58,7 +107,7 @@ export default function CreateTaskScreen() {
 
           <TextInput
             placeholder="Title"
-            placeholderTextColor="#e8ab55"
+            placeholderTextColor="#000000"
             style={styles.input}
             value={title}
             onChangeText={setTitle}
@@ -67,7 +116,7 @@ export default function CreateTaskScreen() {
 
           <TextInput
             placeholder="Details"
-            placeholderTextColor="#e8ab55"
+            placeholderTextColor="#000000"
             style={[styles.input, { height: 80 }]}
             value={details}
             onChangeText={setDetails}
@@ -88,6 +137,9 @@ export default function CreateTaskScreen() {
               language: "en",
                components: "country:ie",
             }}
+            textInputProps={{
+                placeholderTextColor: "#000000",
+            }}
             styles={{
               textInput: styles.input,
               container: { width: "100%" },
@@ -101,22 +153,37 @@ export default function CreateTaskScreen() {
           /> 
 
           <Pressable
-            onPress={() => setShowPicker(true)}
+            onPress={openDateTimePicker}
             style={[styles.input, { justifyContent: "center" }]}>
-            <Text style={{ color: "#e8ab55" }}>{formatDate(dueAt)}</Text>
+            <Text>{formatDate(dueAt)}</Text>
           </Pressable>
           {showPicker && (
             <DateTimePicker
               value={dueAt || new Date()}
-              mode="datetime"
+              mode={pickerMode}
               display={Platform.OS === "ios" ? "spinner" : "default"}
               themeVariant="light" 
-              onChange={(event, selectedDate) => {
-                setShowPicker(false);
-                if (selectedDate) setDueAt(selectedDate);
-              }}
+              onChange={handlePickerChange}
             />
           )}
+           {Platform.OS === "ios" && showPicker && pickerMode === "date" && (
+            <Pressable
+              onPress={() => setPickerMode("time")}
+              style={styles.secondaryBtn}
+            >
+              <Text style={styles.secondaryBtnText}>Choose Time</Text>
+            </Pressable>
+          )}
+
+          {Platform.OS === "ios" && showPicker && pickerMode === "time" && (
+            <Pressable
+              onPress={() => setShowPicker(false)}
+              style={styles.secondaryBtn}
+            >
+              <Text style={styles.secondaryBtnText}>Done</Text>
+            </Pressable>
+          )}
+
 
           <Pressable
             onPress={handleCreateTask}
@@ -126,10 +193,14 @@ export default function CreateTaskScreen() {
               {loading ? "Creating..." : "Create Task"}
             </Text>
           </Pressable>
+          <Pressable onPress={() => router.back()} disabled={loading}>
+            <Text style={styles.cancelText}>Cancel</Text>
+            </Pressable>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
+  
 }
 
 const styles = StyleSheet.create({
@@ -163,7 +234,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     marginBottom: 12,
-    color: "#e8ab55",
+   
   },
 
   createBtn: {
@@ -186,6 +257,24 @@ const styles = StyleSheet.create({
     color: "crimson",
     marginBottom: 12,
     textAlign: "center",
+    fontWeight: "700",
+  },
+  secondaryBtn: {
+    backgroundColor: "#f3f3f3",
+    width: "100%",
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: "center",
+    marginBottom: 12,
+  },
+
+  secondaryBtnText: {
+    color: "#111",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  cancelText: {
+    color: "#555",
     fontWeight: "700",
   },
 });
