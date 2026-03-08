@@ -56,7 +56,7 @@ export default function CreateNotice() {
             value={text}
             onChangeText={setText}
             placeholder="Type your notice..."
-            placeholderTextColor="#e8ab55"
+            placeholderTextColor="#000000"
             multiline
             style={[styles.input, { height: 140, textAlignVertical: "top" }]}
           />
