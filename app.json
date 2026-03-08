@@ -18,6 +18,9 @@
       "googleServicesFile": "./GoogleService-Info.plist",
       "config": {
         "googleMapsApiKey": "AIzaSyBTP94IEeiITP5AzrduivCBsbwzpY-I-ZQ"
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {

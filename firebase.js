@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { initializeAuth,getReactNativePersistence } from "firebase/auth";
 const firebaseConfig = {
   apiKey: "AIzaSyA3aW9WflmqVusOmDH6SaRpcClhqRHaucY",
   authDomain: "communityconnect-1df84.firebaseapp.com",
@@ -13,7 +13,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-const auth = getAuth(app);
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence
+});
 
 const db = getFirestore(app);
 
