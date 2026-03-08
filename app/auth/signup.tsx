@@ -74,7 +74,7 @@ export default function Signup() {
       <View style={styles.formContainer}>
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
           <TextInput placeholder="Username"
-            placeholderTextColor="#e8ab55"
+            placeholderTextColor="#000000"
             style={styles.input}
             value={username}
             onChangeText={setUsername}
@@ -83,7 +83,7 @@ export default function Signup() {
 
           <TextInput
             placeholder="Email"
-            placeholderTextColor="#e8ab55"
+            placeholderTextColor="#000000"
             style={styles.input}
             value={email}
             onChangeText={setEmail}
@@ -93,7 +93,7 @@ export default function Signup() {
 
           <TextInput
             placeholder="Password"
-            placeholderTextColor="#e8ab55"
+            placeholderTextColor="#000000"
             style={styles.input}
             value={password}
             onChangeText={setPassword}
@@ -102,7 +102,7 @@ export default function Signup() {
 
           <TextInput
             placeholder="Confirm Password"
-            placeholderTextColor="#e8ab55"
+            placeholderTextColor="#080808"
             style={styles.input}
             value={retrypassword}
             onChangeText={setretryPassword}
@@ -121,6 +121,9 @@ export default function Signup() {
               language: "en",
               components: "country:ie",
             }}
+             textInputProps={{
+                placeholderTextColor: "#000000",
+              }}
             styles={{
               textInput: styles.input,
               container: { width: "100%" },
@@ -130,7 +133,6 @@ export default function Signup() {
                 overflow: "hidden",
                
               },
-               placeholder: { color: "#e8ab55", },
             }}
           />
 
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 12,
     marginBottom: 12,
-    color: "#e8ab55",
+    color: "#000000",
   },
 
   signUpButton: {
