@@ -6,7 +6,7 @@ import { createUser } from "../../services/userService";
 import { router } from "expo-router";
 
 export default function Signup() {
-  const [username, setUsername] = useState(""); 
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [retrypassword, setretryPassword] = useState("");
@@ -16,61 +16,68 @@ export default function Signup() {
   const [showTowns, setShowTowns] = useState(false);
 
   const locations = [
-  "Select your area",
-  "Balbriggan",
-  "Baldoyle",
-  "Ballyboden",
-  "Blackrock",
-  "Blanchardstown",
-  "Castleknock",
-  "Clonee",
-  "Clondalkin",
-  "Clonsilla",
-  "Dalkey",
-  "Donabate",
-  "Dún Laoghaire",
-  "Glasthule",
-  "Howth",
-  "Killiney",
-  "Knocklyon",
-  "Lucan",
-  "Lusk",
-  "Malahide",
-  "Maynooth",
-  "Mulhuddart",
-  "Newcastle",
-  "Portmarnock",
-  "Rathfarnham",
-  "Rush",
-  "Saggart",
-  "Sandycove",
-  "Santry",
-  "Shankill",
-  "Skerries",
-  "Swords",
-  "Sutton",
-  "Tallaght"
-];
-  
-  async function handleSignup() {// the main function that handles the signup process
+    "Select your area",
+    "Balbriggan",
+    "Baldoyle",
+    "Ballyboden",
+    "Blackrock",
+    "Blanchardstown",
+    "Castleknock",
+    "Clonee",
+    "Clondalkin",
+    "Clonsilla",
+    "Dalkey",
+    "Donabate",
+    "Dún Laoghaire",
+    "Glasthule",
+    "Howth",
+    "Killiney",
+    "Knocklyon",
+    "Lucan",
+    "Lusk",
+    "Malahide",
+    "Maynooth",
+    "Mulhuddart",
+    "Newcastle",
+    "Portmarnock",
+    "Rathfarnham",
+    "Rush",
+    "Saggart",
+    "Sandycove",
+    "Santry",
+    "Shankill",
+    "Skerries",
+    "Swords",
+    "Sutton",
+    "Tallaght",
+  ];
+
+  async function handleSignup() {
+    // the main function that handles the signup process
     try {
       setError("");
       setLoading(true);
 
-      const name = username.trim();// remove extra spaces
-      const mail = email.trim();
-
+      const name = username; // remove extra spaces
+      const mail = email;
 
       if (!name) throw new Error("Username is required.");
       if (!mail) throw new Error("Email is required.");
       if (!password) throw new Error("Password is required.");
-      if (password.length < 6)throw new Error("Password must be at least 6 characters.");
-      if (retrypassword !== password) throw new Error("Passwords do not match.");
+      if (password.length < 6)
+        throw new Error("Password must be at least 6 characters.");
+      if (retrypassword !== password)
+        throw new Error("Passwords do not match.");
       if (!town) throw new Error("Please select a town.");
-      const userCred = await createUserWithEmailAndPassword(auth,mail,password);
-      
-      await createUser(userCred.user.uid, { // create user document in Firestore
-        username: name, 
+      const userCred = await createUserWithEmailAndPassword(
+        auth,
+        mail,
+        password,
+      );
+
+      await createUser(userCred.user.uid, {
+        // create user document in Firestore
+        username: name,
         email: mail,
         location: town,
       });
@@ -79,30 +86,33 @@ export default function Signup() {
       router.replace("/auth/verifyEmail"); // navigate to check for email verification
     } catch (err: any) {
       if (err?.code === "auth/invalid-email") {
-      setError("Please enter a valid email.");}
-      else if(err?.code === "auth/email-already-in-use"){
-      setError("Email already used.");}
-      else setError(err.message || "Signup failed.");
+        setError("Please enter a valid email.");
+      } else if (err?.code === "auth/email-already-in-use") {
+        setError("Email already used.");
+      } else setError(err.message || "Signup failed.");
       console.log("SIGNUP ERROR:", err);
     } finally {
       setLoading(false);
     }
   }
-  
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.textContainer}>
           <Text style={styles.title}>Create</Text>
           <Text style={styles.title}>Account</Text>
         </View>
-      <View style={styles.formContainer}>
+        <View style={styles.formContainer}>
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          <TextInput placeholder="Username"
+          <TextInput
+            placeholder="Username"
             placeholderTextColor="#000000"
             style={styles.input}
             value={username}
@@ -139,34 +149,34 @@ export default function Signup() {
           />
 
           <View style={styles.dropdownContainer}>
-  <Pressable
-    onPress={() => setShowTowns(!showTowns)}
-    style={styles.input}
-  >
-    <Text style={{ color: town ? "#111" : "#777" }}>
-      {town || "Select your area"}
-    </Text>
-  </Pressable>
+            <Pressable
+              onPress={() => setShowTowns(!showTowns)}
+              style={styles.input}
+            >
+              <Text style={{ color: town ? "#111" : "#777" }}>
+                {town || "Select your area"}
+              </Text>
+            </Pressable>
 
-  {showTowns && (
-    <View style={styles.dropdownList}>
-      <ScrollView nestedScrollEnabled>
-        {locations.map((loc) => (
-          <Pressable
-            key={loc}
-            onPress={() => {
-              setTown(loc);
-              setShowTowns(false);
-            }}
-            style={styles.dropdownItem}
-          >
-            <Text>{loc}</Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-    </View>
-  )}
-</View>
+            {showTowns && (
+              <View style={styles.dropdownList}>
+                <ScrollView nestedScrollEnabled>
+                  {locations.map((loc) => (
+                    <Pressable
+                      key={loc}
+                      onPress={() => {
+                        setTown(loc);
+                        setShowTowns(false);
+                      }}
+                      style={styles.dropdownItem}
+                    >
+                      <Text>{loc}</Text>
+                    </Pressable>
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+          </View>
           <Pressable
             style={[styles.signUpButton, loading && { opacity: 0.7 }]}
             onPress={handleSignup}
@@ -272,26 +282,26 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   dropdownContainer: {
-  width: "100%",
-  marginBottom: 12,
-},
+    width: "100%",
+    marginBottom: 12,
+  },
 
-dropdownList: {
-  width: "100%",
-  borderRadius: 12,
-  backgroundColor: "white",
-  maxHeight: 220,
-  overflow: "hidden",
-  marginTop: -8,
-  marginBottom: 12,
-  borderWidth: 1,
-  borderColor: "#ddd",
-},
+  dropdownList: {
+    width: "100%",
+    borderRadius: 12,
+    backgroundColor: "white",
+    maxHeight: 220,
+    overflow: "hidden",
+    marginTop: -8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
 
-dropdownItem: {
-  paddingVertical: 12,
-  paddingHorizontal: 14,
-  borderBottomWidth: 1,
-  borderBottomColor: "#eee",
-},
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
 });
