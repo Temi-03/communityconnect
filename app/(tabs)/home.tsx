@@ -5,16 +5,17 @@ import { auth } from "../../firebase";
 import { getOpenTasks } from "../../services/taskService";
 import { FontAwesome } from "@expo/vector-icons";
 import { getUser } from "../../services/userService";
+
 function formatDateTime(ts: any) {
   if (!ts) return "—";
-  
-    const date = ts.toDate();
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  // Use toLocaleString to format the date and time
+  return ts.toDate().toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 export default function BrowseTasksScreen() {
@@ -30,11 +31,11 @@ export default function BrowseTasksScreen() {
 
       const uid = auth.currentUser?.uid;
       const openTasks = await getOpenTasks(uid);
-      const user = await getUser(uid) as any;
+      const user = (await getUser(uid)) as any;
       setUserLocation(user.location);
       setTasks(openTasks);
     } catch (err: any) {
-        setError("Something went wrong. Please try again.");
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -51,12 +52,18 @@ export default function BrowseTasksScreen() {
           headerTitle: "Community Connect",
           headerTitleAlign: "center",
           headerRight: () => (
-            <Pressable onPress={() => router.push("/task/createTask")} style={{ paddingHorizontal: 20 }}>
+            <Pressable
+              onPress={() => router.push("/task/createTask")}
+              style={{ paddingHorizontal: 20 }}
+            >
               <FontAwesome name="plus-circle" size={24} color="white" />
             </Pressable>
           ),
           headerLeft: () => (
-            <Pressable onPress={() => router.push("/messages")} style={{ paddingHorizontal: 20 }}>
+            <Pressable
+              onPress={() => router.push("/messages")}
+              style={{ paddingHorizontal: 20 }}
+            >
               <FontAwesome name="comments-o" size={24} color="white" />
             </Pressable>
           ),
@@ -87,6 +94,8 @@ export default function BrowseTasksScreen() {
       ) : tasks.length === 0 ? (
         <Text>No open tasks right now.</Text>
       ) : (
+
+        // FlatList is a react-native compoment that is used to render a an array of objects
         <FlatList
           data={tasks}
           keyExtractor={(item) => item.id}
@@ -99,8 +108,11 @@ export default function BrowseTasksScreen() {
             >
               <Text style={styles.cardTitle}>{t.title}</Text>
               <Text style={styles.cardMeta}>{t.location}</Text>
-              {t.dueAt && (<Text style={styles.cardDue}>Due: {formatDateTime(t.dueAt)}</Text>
-            )}         
+              {t.dueAt && (
+                <Text style={styles.cardDue}>
+                  Due: {formatDateTime(t.dueAt)}
+                </Text>
+              )}
               <View style={styles.viewButton}>
                 <Text style={styles.viewButtonText}>View</Text>
               </View>
@@ -110,7 +122,6 @@ export default function BrowseTasksScreen() {
       )}
     </View>
   );
-  
 }
 
 const styles = StyleSheet.create({
@@ -177,18 +188,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   topRow: {
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: 10,
-},
-locationRow: {
-  flexDirection: "row",
-  alignItems: "center",
-  gap: 6,
-},
-locationText: {
-  fontWeight: "600",
-  color: "#333",
-},
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  locationRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  locationText: {
+    fontWeight: "600",
+    color: "#333",
+  },
 });
