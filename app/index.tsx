@@ -1,17 +1,20 @@
 import { Redirect } from "expo-router";
-import {auth} from "../firebase";
+import { auth } from "../firebase";
 
 export default function Index() {
+  //Check current user from firebase
   const user = auth.currentUser;
-  if(user&& !user.emailVerified){
+
+  //user not verified send to get verified
+  if (user && !user.emailVerified) {
     return <Redirect href="/auth/verifyEmail" />;
   }
-  if(user&& user.emailVerified )
-    {
-      return <Redirect href="/(tabs)/home" />;
-    }
 
-    return <Redirect href="/entry" />; //sends to welcome
-  
+  //user verified send to home
+  if (user && user.emailVerified) {
+    return <Redirect href="/(tabs)/home" />;
+  }
 
+  //if both condition fail send to entry
+  return <Redirect href="/entry" />; //sends to welcome
 }
