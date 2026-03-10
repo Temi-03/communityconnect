@@ -1,5 +1,5 @@
-import { View, Text,StyleSheet,Pressable } from "react-native";
-import { router } from "expo-router"
+import { View, Text, StyleSheet, Pressable } from "react-native";
+import { router } from "expo-router";
 
 export default function HomeTab() {
   return (
@@ -12,15 +12,17 @@ export default function HomeTab() {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Pressable 
-          style={styles.signUpButton} 
-          onPress={() => router.replace("/auth/signup")}>
+        <Pressable
+          style={styles.signUpButton}
+          onPress={() => router.replace("/auth/signup")}
+        >
           <Text style={styles.signUpText}>Sign Up</Text>
         </Pressable>
         <Text style={styles.questionText}>Already have an account?</Text>
-        <Pressable 
-          style={styles.loginButton} 
-          onPress={() => router.replace("/auth/login")}>
+        <Pressable
+          style={styles.loginButton}
+          onPress={() => router.replace("/auth/login")}
+        >
           <Text style={styles.loginText}>Login</Text>
         </Pressable>
       </View>
@@ -90,4 +92,3 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-
