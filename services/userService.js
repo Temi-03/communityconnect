@@ -1,5 +1,5 @@
 import { db } from "../firebase";
-import { doc, setDoc, getDoc, updateDoc, serverTimestamp,deleteDoc,deleteField } from "firebase/firestore";
+import { doc, setDoc, getDoc, updateDoc, serverTimestamp,deleteField } from "firebase/firestore";
 
 export async function createUser(uid, data) { //used to create the user
   const email = String(data.email).trim();  //removing white space form data
@@ -50,24 +50,4 @@ export async function deleteUser(uid) {
   });
 
   return true;
-}
-
-export async function savePushToken(uid, expoPushToken) { // save the push token to the user document, so that we can send push notifications to the user later
-  const ref = doc(db, "users", uid);
-  await setDoc(
-    ref,
-    {
-      expoPushToken,
-      tokenUpdatedAt: serverTimestamp(),
-    },
-    { merge: true }
-  );
-}
-
-export async function clearPushToken(uid) {
-  const ref = doc(db, "users", uid);
-  await updateDoc(ref, {
-    expoPushToken: deleteField(),
-    tokenUpdatedAt: serverTimestamp(),
-  });
 }
