@@ -17,7 +17,7 @@
       "bundleIdentifier": "com.communityconnect",
       "googleServicesFile": "./GoogleService-Info.plist",
       "config": {
-        "googleMapsApiKey": "AIzaSyBTP94IEeiITP5AzrduivCBsbwzpY-I-ZQ"
+        "googleMapsApiKey": "AIzaSyD1Da_MEaFao_9o_smfbLSUj9vAQ_5TM8s"
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -32,7 +32,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyBTP94IEeiITP5AzrduivCBsbwzpY-I-ZQ"
+          "apiKey": "AIzaSyD1Da_MEaFao_9o_smfbLSUj9vAQ_5TM8s"
         }
       }
     },
