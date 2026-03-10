@@ -36,17 +36,16 @@ export default function ChatThread() {
   }, [id]);
 
   function formatDateTime(ts: any) {
-    if (!ts) return "";
-
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
-
-    const day = d.getDate();
-    const month = d.toLocaleString("default", { month: "short" });
-    const hours = String(d.getHours()).padStart(2, "0");
-    const minutes = String(d.getMinutes()).padStart(2, "0");
-
-    return `${day} ${month} ${hours}:${minutes}`;
-  }
+  if (!ts) return "—";
+  // Use toLocaleString to format the date and time
+  return ts.toDate().toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
   async function onSend() {
     const uid = auth.currentUser?.uid;

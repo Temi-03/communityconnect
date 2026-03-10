@@ -17,7 +17,6 @@ export default function MessagesInbox() {
       setLoading(false);
       return;
     }
-
     const unsub = listenMyChats(uid, (rows: any[]) => {
       setChats(rows);
       setLoading(false);

@@ -2,27 +2,21 @@ import React, { useEffect, useState } from "react";
 import {View,Text,ActivityIndicator,Pressable,ScrollView,Alert,StyleSheet,} from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { auth } from "../../firebase";
-import {getTaskById,} from "../../services/taskService";
+import { getTaskById } from "../../services/taskService";
 import { getUser } from "../../services/userService";
 import {createApplication,getMyApplicationForTask} from "../../services/applicationService";
 import { FontAwesome } from "@expo/vector-icons";
 
-function formatDateTime(ts:any) {
+function formatDateTime(ts: any) {
   if (!ts) return "—";
-  try {
-    const date = ts.toDate();
-
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-  } catch {
-    return "—";
-  }
+  // Use toLocaleString to format the date and time
+  return ts.toDate().toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function taskStatusLabel(status?: string) {
@@ -32,7 +26,6 @@ function taskStatusLabel(status?: string) {
   if (status === "completed") return "Completed";
   if (status === "closed") return "Closed";
   if (status === "cancelled") return "Cancelled";
-  if (status === "deleted") return "Deleted";
   return status;
 }
 
@@ -41,7 +34,7 @@ function appStatusLabel(status?: string) {
   if (status === "pending") return "Pending Approval";
   if (status === "accepted") return "Accepted";
   if (status === "rejected") return "Rejected";
-  
+
   return status;
 }
 
@@ -62,8 +55,8 @@ function badgeStyleByType(type: "task" | "app", status?: string) {
 }
 
 export default function TaskDetailsScreen() {
-  const params = useLocalSearchParams();
-  const rawId = (params as any).id; //get the task id for  {id}
+  const params = useLocalSearchParams(); // get the url for the request task
+  const rawId = (params as any).id; //get the task id from that url
   const taskId = Array.isArray(rawId) ? rawId[0] : rawId;
 
   const [task, setTask] = useState<any | null>(null);
@@ -85,7 +78,7 @@ export default function TaskDetailsScreen() {
       if (!t) throw new Error("Task not found.");
       setTask(t);
 
-     //the person who created the task
+      //the person who created the task
       if (t.ownerUid) {
         const ownerData = await getUser(t.ownerUid);
         setOwner(ownerData);
@@ -108,6 +101,7 @@ export default function TaskDetailsScreen() {
     }
   }
 
+  // handler for requesting to voluunteer for tasks
   async function handleRequest() {
     try {
       const uid = auth.currentUser?.uid;
@@ -131,19 +125,20 @@ export default function TaskDetailsScreen() {
   }, []);
 
   const myStatus = myApp?.status;
-  
 
   const badgeType: "task" | "app" = myStatus ? "app" : "task";
   const badgeText =
-    badgeType === "app" ? appStatusLabel(myStatus) : taskStatusLabel(task?.status);
+    badgeType === "app"
+      ? appStatusLabel(myStatus)
+      : taskStatusLabel(task?.status);
 
   const infoRows = !task
-  ? []
-  : [
-      { label: "Location", value: task.location || "—" },
-      { label: "Due At", value: formatDateTime(task.dueAt) },
-      { label: "Task Status", value: taskStatusLabel(task.status) },
-    ];
+    ? []
+    : [
+        { label: "Location", value: task.location || "—" },
+        { label: "Due At", value: formatDateTime(task.dueAt) },
+        { label: "Task Status", value: taskStatusLabel(task.status) },
+      ];
 
   if (loading) {
     return (
@@ -166,43 +161,49 @@ export default function TaskDetailsScreen() {
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.container}>
-    
       <View style={styles.headerBlock}>
         <Text style={styles.title}>{task.title || "Untitled Task"}</Text>
 
-        <View style={badgeStyleByType(badgeType, badgeType === "app" ? myStatus : task.status)}>
-      
-        <Text style={styles.badgeText}>{badgeText}</Text>
+        <View
+          style={badgeStyleByType(
+            badgeType,
+            badgeType === "app" ? myStatus : task.status,
+          )}
+        >
+          <Text style={styles.badgeText}>{badgeText}</Text>
         </View>
 
         {myStatus ? (
           <Text style={styles.smallHint}>
-            Your application: <Text style={{ fontWeight: "900" }}>{appStatusLabel(myStatus)}</Text>
+            Your application:{" "}
+            <Text style={{ fontWeight: "900" }}>
+              {appStatusLabel(myStatus)}
+            </Text>
           </Text>
         ) : null}
 
-       
         {owner && (
           <View style={{ marginTop: 6 }}>
             <Text style={styles.ownerName}>{owner.username}</Text>
             <Text style={styles.ownerRating}>
               Rating: {owner.ratingAvg ?? "N/A"}
-              <FontAwesome name="star" size={16} color="#f5b301"  />
+              <FontAwesome name="star" size={16} color="#f5b301" />
             </Text>
           </View>
         )}
-        {(task.status === "accepted" || task.status === "completed") && task.acceptedVolunteerUid ? (
+        {(task.status === "accepted" || task.status === "completed") &&
+        task.acceptedVolunteerUid ? (
           <View style={{ marginTop: 10 }}>
             <Text style={styles.ownerName}>Volunteer</Text>
             <Text style={styles.ownerName}>
               {task.acceptedVolunteerName || "Unknown volunteer"}
             </Text>
             <Text style={styles.ownerRating}>
-              Rating: {task.acceptedVolunteerRatingAvgAtAccept ?? 0} 
-               <FontAwesome name="star" size={16} color="#f5b301"  />
+              Rating: {task.acceptedVolunteerRatingAvgAtAccept ?? 0}
+              <FontAwesome name="star" size={16} color="#f5b301" />
             </Text>
           </View>
-) : null}
+        ) : null}
       </View>
 
       <View style={styles.infoCard}>
@@ -214,40 +215,45 @@ export default function TaskDetailsScreen() {
         ))}
       </View>
 
-      
       <View style={styles.descriptionCard}>
         <Text style={styles.sectionTitle}>Description</Text>
-        <Text style={styles.descText}>
-          {task.details || "-"}
-        </Text>
+        <Text style={styles.descText}>{task.details || "-"}</Text>
       </View>
 
-    
       <View style={{ marginTop: 6 }}>
-  {task.status === "deleted" ? (
-    <Text style={styles.helperText}>This task was deleted by the requester.</Text>
-  ) : task.status === "cancelled" ? (
-    <Text style={styles.helperText}>This task was cancelled by the requester.</Text>
-  ) : task.status !== "open" ? (
-    <Text style={styles.helperText}>This task is no longer open.</Text>
-  ) : myStatus === "pending" ? (
-    <Text style={styles.helperText}>Your request is pending approval.</Text>
-  ) : myStatus === "accepted" ? (
-    <Text style={styles.helperText}>You were accepted.</Text>
-  ) : myStatus === "rejected" ? (
-    <Text style={styles.helperText}>Your request was rejected.</Text>
-  ) : (
-    <Pressable
-      onPress={handleRequest}
-      disabled={requesting}
-      style={[styles.primaryButtons, requesting && styles.primaryButtonsDisabled]}
-    >
-      <Text style={styles.primaryButtonsText}>
-        {requesting ? "Sending…" : "Request to Volunteer"}
-      </Text>
-    </Pressable>
-  )}
-</View>
+        {task.status === "deleted" ? (
+          <Text style={styles.helperText}>
+            This task was deleted by the requester.
+          </Text>
+        ) : task.status === "cancelled" ? (
+          <Text style={styles.helperText}>
+            This task was cancelled by the requester.
+          </Text>
+        ) : task.status !== "open" ? (
+          <Text style={styles.helperText}>This task is no longer open.</Text>
+        ) : myStatus === "pending" ? (
+          <Text style={styles.helperText}>
+            Your request is pending approval.
+          </Text>
+        ) : myStatus === "accepted" ? (
+          <Text style={styles.helperText}>You were accepted.</Text>
+        ) : myStatus === "rejected" ? (
+          <Text style={styles.helperText}>Your request was rejected.</Text>
+        ) : (
+          <Pressable
+            onPress={handleRequest}
+            disabled={requesting}
+            style={[
+              styles.primaryButtons,
+              requesting && styles.primaryButtonsDisabled,
+            ]}
+          >
+            <Text style={styles.primaryButtonsText}>
+              {requesting ? "Sending…" : "Request to Volunteer"}
+            </Text>
+          </Pressable>
+        )}
+      </View>
     </ScrollView>
   );
 }
@@ -261,7 +267,7 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 28,
     gap: 14,
-    paddingTop: 60
+    paddingTop: 60,
   },
 
   headerBlock: {
@@ -313,16 +319,16 @@ const styles = StyleSheet.create({
   },
 
   badgeOpen: {
-    borderColor:"#3D8D34",
+    borderColor: "#3D8D34",
     backgroundColor: "rgba(61,141,52,0.12)",
   },
- 
+
   badgePending: {
-    borderColor:"#e8ab55",
+    borderColor: "#e8ab55",
     backgroundColor: "rgba(224,144,32,0.14)",
   },
   badgeAccepted: {
-    borderColor:"#3D8D34",
+    borderColor: "#3D8D34",
     backgroundColor: "rgba(61,141,52,0.12)",
   },
 
@@ -388,7 +394,7 @@ const styles = StyleSheet.create({
   primaryButtons: {
     paddingVertical: 14,
     borderRadius: 12,
-    backgroundColor:"#3D8D34",
+    backgroundColor: "#3D8D34",
     alignItems: "center",
   },
 
@@ -406,15 +412,15 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
   badgeCancelled: {
-  borderColor: "crimson",
-  backgroundColor: "rgba(220,20,60,0.10)",
-},
-badgeDeleted: {
-  borderColor: "#999",
-  backgroundColor: "#f0f0f0",
-},
-badgeRejected: {
-  borderColor: "crimson",
-  backgroundColor: "rgba(220,20,60,0.10)",
-},
+    borderColor: "crimson",
+    backgroundColor: "rgba(220,20,60,0.10)",
+  },
+  badgeDeleted: {
+    borderColor: "#999",
+    backgroundColor: "#f0f0f0",
+  },
+  badgeRejected: {
+    borderColor: "crimson",
+    backgroundColor: "rgba(220,20,60,0.10)",
+  },
 });
