@@ -3,8 +3,7 @@ import {View,Text,TextInput,Pressable,StyleSheet} from "react-native";
 import { signInWithEmailAndPassword,sendPasswordResetEmail, } from "firebase/auth";
 import { auth } from "../../firebase";
 import { router } from "expo-router";
-import { registerForPushNotifications } from "../../services/notificationService";
-import { savePushToken } from "../../services/userService";
+
 
 export default function Login() { 
   const [email, setEmail] = useState("");
@@ -32,14 +31,6 @@ export default function Login() {
       return;
 }
       console.log("LOGGED IN:", userCred.user.uid);
-        // After successful login, we register for push notifications and save the token to the user document, so that we can send push notifications to the user later
-      try {
-        const token = await registerForPushNotifications();
-        if (token) await savePushToken(userCred.user.uid, token);
-          } catch (err: any) {
-            console.log("Push token not saved:", err?.message || err);
-      }
-      
       router.replace("/(tabs)/home");
 
     } 

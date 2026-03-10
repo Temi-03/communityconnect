@@ -1,10 +1,47 @@
 import { useState } from "react";
 import {View,Text,TextInput,Pressable,StyleSheet,Platform,ScrollView,KeyboardAvoidingView,} from "react-native";
 import { auth } from "../../firebase";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { createTask } from "../../services/taskService";
 import { router } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
+
+const locations=[
+  "Select your area",
+  "Balbriggan",
+  "Baldoyle",
+  "Ballyboden",
+  "Blackrock",
+  "Blanchardstown",
+  "Castleknock",
+  "Clonee",
+  "Clondalkin",
+  "Clonsilla",
+  "Dalkey",
+  "Donabate",
+  "Dún Laoghaire",
+  "Glasthule",
+  "Howth",
+  "Killiney",
+  "Knocklyon",
+  "Lucan",
+  "Lusk",
+  "Malahide",
+  "Maynooth",
+  "Mulhuddart",
+  "Newcastle",
+  "Portmarnock",
+  "Rathfarnham",
+  "Rush",
+  "Saggart",
+  "Sandycove",
+  "Santry",
+  "Shankill",
+  "Skerries",
+  "Swords",
+  "Sutton",
+  "Tallaght"
+];
+
 
 export default function CreateTaskScreen() {
   const [title, setTitle] = useState("");
@@ -15,6 +52,7 @@ export default function CreateTaskScreen() {
   const [pickerMode, setPickerMode] = useState<"date" | "time">("date");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showTowns, setShowTowns] = useState(false);
 
   function formatDate(date: any) {
     if (!date) return "Select due date & time";
@@ -124,34 +162,36 @@ export default function CreateTaskScreen() {
               autoComplete="off"
 
           />
+           <View style={styles.dropdownContainer}>
 
-         <GooglePlacesAutocomplete
-            placeholder="Town"
-            fetchDetails={false}
-            onPress={(data) => {
-              const townName = data.description.split(",")[0].trim();
-              setTown(townName);
-            }}
-            query={{
-              key: process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY,
-              language: "en",
-               components: "country:ie",
-            }}
-            textInputProps={{
-                placeholderTextColor: "#000000",
-            }}
-            styles={{
-              textInput: styles.input,
-              container: { width: "100%" },
-              listView: {
-                borderRadius: 12,
-                marginTop: -8,
-                overflow: "hidden",
-              },
-              placeholder: { color: "#e8ab55" },
-            }}
-          /> 
 
+  <Pressable
+    onPress={() => setShowTowns(!showTowns)}
+    style={styles.input}
+  >
+    <Text>{town || "Select your area"}</Text>
+  </Pressable>
+
+  {showTowns && (
+    <View style={styles.dropdownList}>
+      <ScrollView nestedScrollEnabled>
+        {locations.map((loc) => (
+          <Pressable
+            key={loc}
+            onPress={() => {
+              setTown(loc);
+              setShowTowns(false);
+            }}
+            style={styles.dropdownItem}
+          >
+            <Text>{loc}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </View>
+  )}
+
+</View>
           <Pressable
             onPress={openDateTimePicker}
             style={[styles.input, { justifyContent: "center" }]}>
@@ -277,4 +317,26 @@ const styles = StyleSheet.create({
     color: "#555",
     fontWeight: "700",
   },
+  
+  dropdownContainer: {
+  width: "100%",
+  marginBottom: 12,
+},
+
+dropdownList: {
+  width: "100%",
+  borderWidth: 1,
+  borderColor: "#ddd",
+  borderRadius: 12,
+  backgroundColor: "white",
+  maxHeight: 220,
+  overflow: "hidden",
+},
+
+dropdownItem: {
+  paddingVertical: 12,
+  paddingHorizontal: 14,
+  borderBottomWidth: 1,
+  borderBottomColor: "#eee",
+},
 });

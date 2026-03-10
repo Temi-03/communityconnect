@@ -1,12 +1,47 @@
-import { useEffect, useState,useRef} from "react";
+import { useEffect, useState} from "react";
 import {View,Text,ScrollView,TextInput,Pressable,ActivityIndicator,StyleSheet,} from "react-native";
 import { router, Stack } from "expo-router";
 import { auth, db } from "../../firebase";
 import { doc,onSnapshot } from "firebase/firestore";
 import {clearPushToken,deleteUser as deleteUserDoc,updateUser} from "../../services/userService";
 import { signOut, updatePassword, deleteUser,EmailAuthProvider,reauthenticateWithCredential, } from "firebase/auth";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { FontAwesome } from "@expo/vector-icons";
+const locations=[
+  "Balbriggan",
+  "Baldoyle",
+  "Ballyboden",
+  "Blackrock",
+  "Blanchardstown",
+  "Castleknock",
+  "Clonee",
+  "Clondalkin",
+  "Clonsilla",
+  "Dalkey",
+  "Donabate",
+  "Dún Laoghaire",
+  "Glasthule",
+  "Howth",
+  "Killiney",
+  "Knocklyon",
+  "Lucan",
+  "Lusk",
+  "Malahide",
+  "Maynooth",
+  "Mulhuddart",
+  "Newcastle",
+  "Portmarnock",
+  "Rathfarnham",
+  "Rush",
+  "Saggart",
+  "Sandycove",
+  "Santry",
+  "Shankill",
+  "Skerries",
+  "Swords",
+  "Sutton",
+  "Tallaght"
+];
+
 export default function SettingsScreen() {
   const uid = auth.currentUser?.uid;
 
@@ -17,47 +52,41 @@ export default function SettingsScreen() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [ratingAvg, setRatingAvg] = useState(0);
-  const placesRef = useRef<any>(null);
   const [currentPassword, setCurrentPassword] = useState("");
+  const [showTowns, setShowTowns] = useState(false);
   function showMessage(text: string) {
     setMessage(text);
     setTimeout(() => setMessage(""), 2500);
   }
 
   useEffect(() => {
-    if (!uid) {
-      setLoading(false);
-      return;
-    }
+  if (!uid) {
+    setLoading(false);
+    return;
+  }
+
   const unsub = onSnapshot(
     doc(db, "users", uid),
     (snap) => {
-        if (snap.exists()) {
-          const data: any = snap.data();
+      if (snap.exists()) {
+        const data: any = snap.data();
 
-        const loc = String(data.location);
-
-        setUsername(String(data.username));
+        const loc = String(data.location ?? "");
+        setUsername(String(data.username ?? ""));
         setTown(loc);
         setRatingAvg(Number(data.ratingAvg ?? 0));
-        setTimeout(() => {
-          if (placesRef.current) {
-            placesRef.current.setAddressText(loc);
-          }
-        }, 300);
       }
 
       setLoading(false);
     },
-    (err) => {
+    () => {
       showMessage("Failed to load profile.");
-       setLoading(false);
+      setLoading(false);
     }
   );
 
   return () => unsub();
 }, [uid]);
-
   async function saveProfile() {
     if (!uid) return;
 
@@ -196,40 +225,44 @@ async function reauthenticateUser() {
     <Text style={styles.ratingEmpty}>No ratings yet</Text>
   )}
 </View>
-      <TextInput
-        value={username}
-        onChangeText={setUsername}
-        placeholder="Username"
-        style={styles.input}
-      />
-      <GooglePlacesAutocomplete
-            ref={placesRef}
-            placeholder="Town"
-            fetchDetails={false}
-            onPress={(data) => {
-              const townName =  data.structured_formatting.main_text ||data.description.split(",")[0].trim();
-              setTown(townName);
-              placesRef.current?.setAddressText(townName);
+      
+     <TextInput
+  value={username}
+  onChangeText={setUsername}
+  placeholder="Username"
+  style={styles.input}
+  placeholderTextColor="#000000"
+/>
+
+<View style={styles.dropdownContainer}>
+  <Pressable
+    onPress={() => setShowTowns(!showTowns)}
+    style={styles.input}
+  >
+    <Text style={{ color: town ? "#111" : "#777" }}>
+      {town || "Select your area"}
+    </Text>
+  </Pressable>
+
+  {showTowns && (
+    <View style={styles.dropdownList}>
+      <ScrollView nestedScrollEnabled>
+        {locations.map((loc) => (
+          <Pressable
+            key={loc}
+            onPress={() => {
+              setTown(loc);
+              setShowTowns(false);
             }}
-            query={{
-              key: process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY,
-              language: "en",
-              components: "country:ie",
-            }}
-            textInputProps={{
-                placeholderTextColor: "#000000",
-            }}
-            styles={{
-              textInput: styles.input,
-              container: { width: "100%" },
-              listView: {
-                borderRadius: 12,
-                marginTop: -8,
-                overflow: "hidden",
-               
-              },
-            }}
-        />
+            style={styles.dropdownItem}
+          >
+            <Text>{loc}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </View>
+  )}
+</View>
 
       <Pressable onPress={saveProfile} style={styles.button}>
         <Text style={styles.buttonText}>Save</Text>
@@ -389,5 +422,28 @@ ratingValue: {
 ratingEmpty: {
   fontWeight: "600",
   color: "#777",
+},
+dropdownContainer: {
+  width: "100%",
+  marginBottom: 12,
+},
+
+dropdownList: {
+  width: "100%",
+  borderWidth: 1,
+  borderColor: "#ddd",
+  borderRadius: 10,
+  backgroundColor: "white",
+  maxHeight: 220,
+  overflow: "hidden",
+  marginTop: -6,
+  marginBottom: 12,
+},
+
+dropdownItem: {
+  paddingVertical: 12,
+  paddingHorizontal: 12,
+  borderBottomWidth: 1,
+  borderBottomColor: "#eee",
 },
 });

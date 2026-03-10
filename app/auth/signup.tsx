@@ -1,12 +1,9 @@
 import { useState } from "react";//
 import {View,Text,TextInput,Pressable,StyleSheet,KeyboardAvoidingView,Platform,ScrollView,} from "react-native";
 import { createUserWithEmailAndPassword,sendEmailVerification } from "firebase/auth";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete"; //to help user search for town
 import { auth } from "../../firebase";
 import { createUser } from "../../services/userService";
 import { router } from "expo-router";
-import { registerForPushNotifications } from "../../services/notificationService";
-import { savePushToken } from "../../services/userService";
 
 export default function Signup() {
   const [username, setUsername] = useState(""); 
@@ -16,6 +13,44 @@ export default function Signup() {
   const [town, setTown] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showTowns, setShowTowns] = useState(false);
+
+  const locations = [
+  "Select your area",
+  "Balbriggan",
+  "Baldoyle",
+  "Ballyboden",
+  "Blackrock",
+  "Blanchardstown",
+  "Castleknock",
+  "Clonee",
+  "Clondalkin",
+  "Clonsilla",
+  "Dalkey",
+  "Donabate",
+  "Dún Laoghaire",
+  "Glasthule",
+  "Howth",
+  "Killiney",
+  "Knocklyon",
+  "Lucan",
+  "Lusk",
+  "Malahide",
+  "Maynooth",
+  "Mulhuddart",
+  "Newcastle",
+  "Portmarnock",
+  "Rathfarnham",
+  "Rush",
+  "Saggart",
+  "Sandycove",
+  "Santry",
+  "Shankill",
+  "Skerries",
+  "Swords",
+  "Sutton",
+  "Tallaght"
+];
   
   async function handleSignup() {// the main function that handles the signup process
     try {
@@ -40,12 +75,6 @@ export default function Signup() {
         location: town,
       });
       await sendEmailVerification(userCred.user);
-      try {
-    const token = await registerForPushNotifications();
-    if (token) await savePushToken(userCred.user.uid, token);
-    } catch (err: any) {
-    console.log("Push token not saved after signup:", err?.message || err);
-    }
 
       router.replace("/auth/verifyEmail"); // navigate to check for email verification
     } catch (err: any) {
@@ -109,33 +138,35 @@ export default function Signup() {
             secureTextEntry
           />
 
-          <GooglePlacesAutocomplete
-            placeholder="Town"
-            fetchDetails={false}
-            onPress={(data) => {
-              const townName = data.description.split(",")[0].trim();
-              setTown(townName);
-            }}
-            query={{
-              key: process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY,
-              language: "en",
-              components: "country:ie",
-            }}
-             textInputProps={{
-                placeholderTextColor: "#000000",
-              }}
-            styles={{
-              textInput: styles.input,
-              container: { width: "100%" },
-              listView: {
-                borderRadius: 12,
-                marginTop: -8,
-                overflow: "hidden",
-               
-              },
-            }}
-          />
+          <View style={styles.dropdownContainer}>
+  <Pressable
+    onPress={() => setShowTowns(!showTowns)}
+    style={styles.input}
+  >
+    <Text style={{ color: town ? "#111" : "#777" }}>
+      {town || "Select your area"}
+    </Text>
+  </Pressable>
 
+  {showTowns && (
+    <View style={styles.dropdownList}>
+      <ScrollView nestedScrollEnabled>
+        {locations.map((loc) => (
+          <Pressable
+            key={loc}
+            onPress={() => {
+              setTown(loc);
+              setShowTowns(false);
+            }}
+            style={styles.dropdownItem}
+          >
+            <Text>{loc}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </View>
+  )}
+</View>
           <Pressable
             style={[styles.signUpButton, loading && { opacity: 0.7 }]}
             onPress={handleSignup}
@@ -240,4 +271,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  dropdownContainer: {
+  width: "100%",
+  marginBottom: 12,
+},
+
+dropdownList: {
+  width: "100%",
+  borderRadius: 12,
+  backgroundColor: "white",
+  maxHeight: 220,
+  overflow: "hidden",
+  marginTop: -8,
+  marginBottom: 12,
+  borderWidth: 1,
+  borderColor: "#ddd",
+},
+
+dropdownItem: {
+  paddingVertical: 12,
+  paddingHorizontal: 14,
+  borderBottomWidth: 1,
+  borderBottomColor: "#eee",
+},
 });
