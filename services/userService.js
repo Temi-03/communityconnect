@@ -1,12 +1,15 @@
 import { db } from "../firebase";
 import { doc, setDoc, getDoc, updateDoc, serverTimestamp,deleteField } from "firebase/firestore";
 
-export async function createUser(uid, data) { //used to create the user
-  const email = String(data.email).trim();  //removing white space form data
-  const username = String(data.username).trim();
-  const location = String(data.location).trim();
+//used
+export async function createUser(uid, data) {
+  //used to create the user
+  const email = String(data.email);
+  const username = String(data.username);
+  const location = String(data.location);
   const ref = doc(db, "users", uid);
-  await setDoc(ref, { // where the data is passed in 
+  await setDoc(ref, {
+    // where the data is passed in
     uid,
     username,
     email,
@@ -15,17 +18,18 @@ export async function createUser(uid, data) { //used to create the user
     ratingCount: 0,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-  
   });
 }
 
-export async function getUser(uid) { //get user id
+export async function getUser(uid) {
+  //get user id
   const ref = doc(db, "users", uid);
   const snap = await getDoc(ref);
   return snap.data();
 }
 
-export async function updateUser(uid, data) { // will be used to update user dtat
+export async function updateUser(uid, data) {
+  // will be used to update user dtat
   const ref = doc(db, "users", uid);
   await updateDoc(ref, {
     ...data,
