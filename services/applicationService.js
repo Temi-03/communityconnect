@@ -1,18 +1,21 @@
 import { db } from "../firebase";
-import { collection, doc, getDocs,query,where, serverTimestamp ,getDoc,deleteDoc,setDoc,updateDoc} from "firebase/firestore";
 import { buildChatId } from "./chatService";
+
+// generates unqiue id
 function appDocId(taskId, volunteerUid) {
   return `${taskId}_${volunteerUid}`;
 }
 
 export async function createApplication(taskId, volunteerUid) {
-  const taskRef = doc(db, "tasks", taskId);
-  const appRef = doc(db, "applications", appDocId(taskId, volunteerUid));
-  const userRef = doc(db, "users", volunteerUid);
+  const taskRef = doc(db, "tasks", taskId); // get the task by id
+  const appRef = doc(db, "applications", appDocId(taskId, volunteerUid)); // get appilication by id
+  const userRef = doc(db, "users", volunteerUid); // get user by id
 
+  //check is there is a task
   const taskSnap = await getDoc(taskRef);
   if (!taskSnap.exists()) throw new Error("Task does not exist");
 
+  // get the data for that particular task
   const task = taskSnap.data();
 
   if (task.status !== "open") throw new Error("Task is no longer open.");
@@ -27,6 +30,7 @@ export async function createApplication(taskId, volunteerUid) {
     }
   }
 
+  // get the application data etc...
   const appSnap = await getDoc(appRef);
   if (appSnap.exists()) {
     const s = appSnap.data()?.status;
@@ -38,6 +42,7 @@ export async function createApplication(taskId, volunteerUid) {
     throw new Error("Application already exists.");
   }
 
+  // getting the user data etc...
   const userSnap = await getDoc(userRef);
   if (!userSnap.exists()) throw new Error("Volunteer user not found.");
 
@@ -79,12 +84,12 @@ export async function getMyApplicationForTask(taskId, volunteerUid) {
 export async function getMyApplications(volunteerUid) {
   const q = query(
     collection(db, "applications"),
-    where("volunteerUid", "==", volunteerUid)
+    where("volunteerUid", "==", volunteerUid),
   );
 
   const snap = await getDocs(q);
   const rows = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-  // newest first 
+  // newest first
   rows.sort((a, b) => {
     const aTime = a?.createdAt?.seconds ?? 0;
     const bTime = b?.createdAt?.seconds ?? 0;
@@ -95,7 +100,10 @@ export async function getMyApplications(volunteerUid) {
 }
 
 export async function getPendingApplicationsForOwner(ownerUid) {
-  const q = query(collection(db, "applications"), where("ownerUid", "==", ownerUid));
+  const q = query(
+    collection(db, "applications"),
+    where("ownerUid", "==", ownerUid),
+  );
   const snap = await getDocs(q);
 
   return snap.docs
@@ -136,7 +144,7 @@ export async function acceptApplication(appId, ownerUid) {
       lastMessage: "",
       lastMessageAt: serverTimestamp(),
     },
-    { merge: true }
+    { merge: true },
   );
 
   await updateDoc(appRef, {
@@ -159,7 +167,7 @@ export async function acceptApplication(appId, ownerUid) {
   const q = query(
     collection(db, "applications"),
     where("taskId", "==", app.taskId),
-    where("status", "==", "pending")
+    where("status", "==", "pending"),
   );
 
   const snap = await getDocs(q);
@@ -187,7 +195,8 @@ export async function rejectApplication(appId, ownerUid) {
 
     const app = snap.data();
     if (app.ownerUid !== ownerUid) throw new Error("Not allowed.");
-    if (app.status !== "pending") throw new Error("Application is not pending.");
+    if (app.status !== "pending")
+      throw new Error("Application is not pending.");
 
     tx.update(appRef, {
       status: "rejected",
@@ -209,7 +218,8 @@ export async function withdrawApplication(appId, currentUid) {
   const app = snap.data();
 
   if (app.volunteerUid !== currentUid) throw new Error("Not allowed.");
-  if (app.status !== "pending") throw new Error("You can only withdraw pending applications.");
+  if (app.status !== "pending")
+    throw new Error("You can only withdraw pending applications.");
 
   await deleteDoc(ref);
   return true;
