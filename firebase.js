@@ -14,10 +14,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-const auth = initializeAuth(app, {
+const auth = initializeAuth(app, {//store on devive auth state so that user does not need to login every time they open the app
   persistence: getReactNativePersistence(AsyncStorage)
 });
 
-const db = getFirestore(app);
+const db = getFirestore(app);//firestore database instance
 
 export { auth, db };
