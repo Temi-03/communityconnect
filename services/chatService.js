@@ -21,20 +21,21 @@ export async function ensureChatExists(ownerUid, volunteerUid, taskId) {
       lastMessage: "",
       lastMessageAt: serverTimestamp(),
     },
-    { merge: true }
+    { merge: true },
   );
 
   return chatId;
 }
 
-// listen to chat 
+// listen to chat
 export function listenMyChats(uid, cb) {
   const q = query(
     collection(db, "chats"),
     where("participants", "array-contains", uid),
-    orderBy("lastMessageAt", "desc")
+    orderBy("lastMessageAt", "desc"),
   );
 
+  // listening for changes real time to then update chat in the callback (cb)
   return onSnapshot(q, (snap) => {
     cb(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
   });
@@ -44,17 +45,17 @@ export function listenMyChats(uid, cb) {
 export function listenMessages(chatId, cb) {
   const q = query(
     collection(db, "chats", chatId, "messages"),
-    orderBy("createdAt", "asc")
+    orderBy("createdAt", "asc"),
   );
-  
+
   return onSnapshot(q, (snap) => {
     const chats = [];
-   snap.forEach((doc) => {chats.push({id: doc.id,...doc.data(),
+    snap.forEach((doc) => {
+      chats.push({ id: doc.id, ...doc.data() });
     });
-  });
 
-  cb(chats);
-});
+    cb(chats);
+  });
 }
 
 // send message + update preview
