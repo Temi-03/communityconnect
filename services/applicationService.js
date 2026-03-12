@@ -1,3 +1,4 @@
+import {collection,deleteDoc,doc,getDoc,getDocs,query,serverTimestamp,setDoc,updateDoc,where,} from "firebase/firestore";
 import { db } from "../firebase";
 import { buildChatId } from "./chatService";
 
@@ -189,7 +190,7 @@ export async function acceptApplication(appId, ownerUid) {
 export async function rejectApplication(appId, ownerUid) {
   const appRef = doc(db, "applications", appId);
 
-  await runTransaction(db, async (tx) => {
+  await runTransaction(db, async (tx) => { //here chane 
     const snap = await tx.get(appRef);
     if (!snap.exists()) throw new Error("Application not found");
 
