@@ -50,7 +50,7 @@ export async function createStarRatingForTask(taskId, raterUid, stars) {
   const q = query(
     collection(db, "applications"),
     where("taskId", "==", taskId),
-    where("status", "==", "accepted"),
+    where("status", "==", "completed"),
     limit(1)
   );
 
