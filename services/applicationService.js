@@ -190,8 +190,7 @@ export async function acceptApplication(appId, ownerUid) {
 export async function rejectApplication(appId, ownerUid) {
   const appRef = doc(db, "applications", appId);
 
-  await runTransaction(db, async (tx) => { //here chane 
-    const snap = await tx.get(appRef);
+    const snap = await getDoc(appRef);
     if (!snap.exists()) throw new Error("Application not found");
 
     const app = snap.data();
@@ -199,12 +198,11 @@ export async function rejectApplication(appId, ownerUid) {
     if (app.status !== "pending")
       throw new Error("Application is not pending.");
 
-    tx.update(appRef, {
+    await updateDoc(appRef, {
       status: "rejected",
       decidedAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
-  });
 
   return "Rejected";
 }
